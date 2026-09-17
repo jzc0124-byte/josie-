@@ -1,0 +1,1610 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f5f2">
+  <title>知时 · 学习打卡</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f5f2;
+      --surface: #ffffff;
+      --surface-soft: #eef1ed;
+      --surface-deep: #e6ebe5;
+      --ink: #1c211e;
+      --muted: #69716c;
+      --faint: #98a09a;
+      --line: #dce1dc;
+      --line-strong: #cbd2cc;
+      --green: #1e6a4d;
+      --green-dark: #15533c;
+      --green-soft: #dcebe3;
+      --amber: #8b5b18;
+      --amber-soft: #f4ead7;
+      --blue: #3977a9;
+      --red: #b5534a;
+      --gold: #a87925;
+      --violet: #7562a5;
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--bg); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font: inherit; letter-spacing: 0; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .app-shell {
+      width: min(1240px, 100%);
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) max(28px, env(safe-area-inset-right)) max(48px, env(safe-area-inset-bottom)) max(28px, env(safe-area-inset-left));
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 58px;
+      padding-bottom: 17px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark { width: 38px; height: 38px; flex: 0 0 auto; }
+    .brand-name { font-size: 17px; line-height: 21px; font-weight: 760; }
+    .brand-sub { color: var(--muted); font-size: 11px; line-height: 15px; }
+    .toolbar { display: flex; align-items: center; gap: 4px; }
+    .icon-button {
+      width: 44px;
+      height: 44px;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color .16s ease, background-color .16s ease, border-color .16s ease;
+    }
+    .icon-button:hover { color: var(--ink); background: var(--surface); border-color: var(--line); }
+    .icon-button:active { background: var(--surface-deep); }
+    .icon-button:disabled { opacity: .35; cursor: default; }
+    .icon-button:focus-visible, .primary-button:focus-visible, .secondary-button:focus-visible, .start-button:focus-visible, .redeem-button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(30, 106, 77, .2);
+      outline-offset: 2px;
+    }
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 126px;
+      gap: 32px;
+      padding: 24px 0 22px;
+    }
+    .eyebrow { color: var(--green); font-size: 12px; line-height: 18px; font-weight: 760; margin-bottom: 6px; }
+    h1 { margin: 0; font-size: 29px; line-height: 37px; font-weight: 760; }
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .date-nav .icon-button { width: 40px; height: 40px; }
+    .date-display {
+      min-width: 126px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 680;
+      color: var(--ink);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    .stat { min-width: 0; padding: 18px 20px 17px; }
+    .stat + .stat { border-left: 1px solid var(--line); }
+    .stat-value { font-size: 23px; line-height: 29px; font-weight: 760; font-variant-numeric: tabular-nums; }
+    .stat-label { margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 16px; }
+    .habit-overview {
+      display: grid;
+      grid-template-columns: 190px minmax(0, 1fr);
+      gap: 28px;
+      align-items: center;
+      margin: -8px 0 34px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .habit-summary { display: grid; gap: 12px; }
+    .habit-streak-block { display: grid; gap: 2px; }
+    .habit-streak { display: flex; align-items: baseline; gap: 7px; }
+    .habit-streak strong { color: var(--green); font-size: 25px; line-height: 30px; font-variant-numeric: tabular-nums; }
+    .habit-streak span { color: var(--muted); font-size: 12px; }
+    .streak-hint { color: var(--muted); font-size: 10px; line-height: 14px; }
+    .habit-time-row { display: flex; align-items: center; gap: 8px; }
+    .habit-time-row label { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .habit-time-row input {
+      width: 96px;
+      height: 36px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--ink);
+    }
+    .routine-toggle { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; cursor: pointer; }
+    .routine-toggle input { width: 17px; height: 17px; margin: 0; accent-color: var(--green); }
+    .calendar-strip { display: grid; gap: 6px; }
+    .calendar-week { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 8px; align-items: center; }
+    .calendar-week-label { color: var(--muted); font-size: 10px; font-weight: 680; }
+    .calendar-days { display: grid; grid-template-columns: repeat(7,minmax(32px,1fr)); gap: 5px; }
+    .calendar-day {
+      min-width: 0;
+      height: 54px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 3px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .calendar-day:hover { border-color: var(--line); background: var(--surface); }
+    .calendar-day.current { border-color: var(--green); background: var(--green); color: #fff; outline: 3px solid var(--green-soft); outline-offset: 1px; }
+    .calendar-day.selected { background: var(--surface-deep); color: var(--ink); }
+    .calendar-day.studied { background: var(--green-soft); color: var(--green-dark); }
+    .calendar-day.current, .calendar-day.current.selected, .calendar-day.current.studied { border-color: var(--green); background: var(--green); color: #fff; }
+    .calendar-weekday { font-size: 9px; line-height: 12px; }
+    .calendar-date { font-size: 13px; line-height: 16px; font-weight: 720; font-variant-numeric: tabular-nums; }
+    .fixed-schedule { margin: -18px 0 34px; padding-bottom: 26px; border-bottom: 1px solid var(--line); }
+    .fixed-schedule .section-head { margin-bottom: 4px; }
+    .schedule-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .schedule-item { min-width: 0; display: grid; grid-template-columns: 76px minmax(0,1fr) auto; gap: 10px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .schedule-item:nth-child(odd) { padding-right: 20px; }
+    .schedule-item:nth-child(even) { padding-left: 20px; border-left: 1px solid var(--line); }
+    .schedule-day { color: var(--green-dark); font-size: 11px; font-weight: 760; }
+    .schedule-name { min-width: 0; color: var(--ink); font-size: 12px; font-weight: 680; overflow-wrap: anywhere; }
+    .schedule-time { color: var(--muted); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 42px;
+      align-items: start;
+    }
+    .section-head { display: flex; align-items: center; justify-content: space-between; min-height: 32px; gap: 12px; margin-bottom: 12px; }
+    h2 { margin: 0; font-size: 18px; line-height: 25px; font-weight: 740; }
+    .count { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .task-form {
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) minmax(145px, .9fr) 112px 48px;
+      gap: 0;
+      margin-bottom: 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+    }
+    input, select {
+      width: 100%;
+      height: 48px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-radius: 0;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 0 13px;
+      outline: none;
+    }
+    select { color: var(--muted); cursor: pointer; }
+    input::placeholder { color: var(--faint); }
+    .task-form input:focus-visible, .task-form select:focus-visible {
+      position: relative;
+      z-index: 1;
+      outline: 2px solid var(--green);
+      outline-offset: -2px;
+    }
+    .task-form #taskTitle[hidden] { display: none; }
+    .task-form.custom-task #taskTitle { display: block; grid-column: 1 / -1; border-top: 1px solid var(--line); border-right: 0; }
+    .primary-button, .start-button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 7px;
+      padding: 0 17px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 720;
+      cursor: pointer;
+      transition: background-color .16s ease, transform .12s ease;
+    }
+    .primary-button:hover, .start-button:hover { background: var(--green-dark); }
+    .primary-button:active, .start-button:active { transform: scale(.98); }
+    .primary-button:disabled, .start-button:disabled { opacity: .4; cursor: default; transform: none; }
+    .task-form .primary-button {
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0;
+      border-radius: 0;
+      font-size: 0;
+    }
+    .task-form .primary-button::before { content: "+"; font-size: 24px; line-height: 1; font-weight: 400; }
+    .task-list, .session-list { border-top: 1px solid var(--line); }
+    .task-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      min-height: 86px;
+      padding: 15px 4px;
+      border-bottom: 1px solid var(--line);
+      transition: background-color .16s ease;
+    }
+    .task-row:hover { background: rgba(255,255,255,.62); }
+    .task-check {
+      appearance: none;
+      width: 26px;
+      height: 26px;
+      margin: 0;
+      border: 1.5px solid #a5aea7;
+      border-radius: 6px;
+      background: var(--surface);
+      cursor: pointer;
+      position: relative;
+    }
+    .task-check:checked { border-color: var(--green); background: var(--green); }
+    .task-check:checked::after {
+      content: "";
+      position: absolute;
+      width: 9px;
+      height: 5px;
+      left: 7px;
+      top: 7px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg);
+    }
+    .task-check:disabled { cursor: default; opacity: .55; }
+    .task-main { min-width: 0; }
+    .task-title { font-size: 15px; font-weight: 680; line-height: 22px; overflow-wrap: anywhere; }
+    .task-row.done .task-title { color: var(--faint); text-decoration: line-through; text-decoration-thickness: 1px; }
+    .task-row.needs-check .task-title { color: var(--ink); text-decoration: none; }
+    .task-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 5px; color: var(--muted); font-size: 11px; line-height: 17px; }
+    .task-minimum { color: var(--green-dark); font-weight: 650; }
+    .task-status-warning { color: var(--amber); font-weight: 720; }
+    .subject-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; background: var(--subject-color, var(--muted)); }
+    .task-progress { height: 2px; margin-top: 10px; overflow: hidden; background: var(--surface-deep); }
+    .task-progress > span { display: block; height: 100%; background: var(--green); }
+    .task-actions { display: flex; align-items: center; gap: 3px; }
+    .start-button { min-width: 72px; min-height: 40px; padding: 0 14px; }
+    .start-button.secondary { border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
+    .start-button.warning { background: var(--amber); }
+    .start-button.warning:hover { background: #704811; }
+    .empty-list { padding: 54px 12px; border-bottom: 1px solid var(--line); text-align: center; color: var(--muted); font-size: 14px; }
+    .side { display: grid; gap: 30px; }
+    .timer-card {
+      border: 1px solid #244c3e;
+      border-radius: var(--radius);
+      background: #173f32;
+      color: #fff;
+      overflow: hidden;
+    }
+    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 48px; padding: 0 18px; border-bottom: 1px solid rgba(255,255,255,.13); }
+    .card-label { color: rgba(255,255,255,.78); font-size: 12px; font-weight: 720; }
+    .status-pill { color: rgba(255,255,255,.62); font-size: 11px; font-weight: 700; }
+    .status-pill::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: rgba(255,255,255,.35); vertical-align: 1px; }
+    .status-pill.live { color: #bfe6d0; }
+    .status-pill.live::before { background: #76d09b; }
+    .timer-body { padding: 24px; }
+    .timer-idle { min-height: 178px; display: grid; place-items: center; text-align: center; padding: 26px; }
+    .timer-idle::before { content: "◷"; display: grid; width: 42px; height: 42px; margin: 0 auto 17px; place-items: center; border: 1px solid rgba(255,255,255,.32); border-radius: 50%; color: rgba(255,255,255,.78); font-size: 19px; }
+    .timer-idle strong { display: block; margin-bottom: 7px; color: #fff; font-size: 15px; }
+    .timer-idle span { color: rgba(255,255,255,.58); font-size: 12px; }
+    .active-kicker { color: #99d5b5; font-size: 11px; font-weight: 720; }
+    .active-title { margin-top: 9px; color: #fff; font-size: 18px; line-height: 25px; font-weight: 720; overflow-wrap: anywhere; }
+    .timer-value { margin-top: 22px; color: #fff; font-size: 42px; line-height: 48px; font-weight: 680; font-variant-numeric: tabular-nums; }
+    .timer-meta { margin-top: 5px; color: rgba(255,255,255,.58); font-size: 11px; }
+    .timer-footer { display: flex; justify-content: stretch; margin-top: 26px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.13); }
+    .timer-footer .primary-button { width: 100%; background: #fff; color: #173f32; }
+    .timer-footer .primary-button:hover { background: #e8f0eb; }
+    .session-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 64px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .session-main { min-width: 0; }
+    .session-title { font-size: 14px; font-weight: 670; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .session-meta { display: flex; align-items: center; gap: 7px; margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .session-note { margin-top: 6px; color: var(--ink); font-size: 12px; line-height: 18px; overflow-wrap: anywhere; }
+    .completion-mark { color: var(--green-dark); font-weight: 680; }
+    .completion-mark.short { color: var(--red); }
+    .completion-mark.needs-check { color: var(--amber); }
+    .session-end { display: flex; align-items: center; gap: 4px; }
+    .session-time { font-size: 12px; font-weight: 720; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .weekly-review {
+      margin-top: 48px;
+      padding-top: 30px;
+      border-top: 1px solid var(--line-strong);
+    }
+    .weekly-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    .weekly-range { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+    .weekly-layout { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 34px; align-items: start; }
+    .weekly-overview { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+    .weekly-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
+    .weekly-metric { min-width: 0; padding: 16px 12px 14px; text-align: center; }
+    .weekly-metric + .weekly-metric { border-left: 1px solid var(--line); }
+    .weekly-metric strong { display: block; font-size: 17px; line-height: 23px; font-variant-numeric: tabular-nums; }
+    .weekly-metric span { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .weekly-progress { height: 4px; background: var(--surface-deep); }
+    .weekly-progress span { display: block; height: 100%; background: var(--green); transition: width .2s ease; }
+    .weekly-feedback { padding: 14px 16px 16px; color: var(--muted); font-size: 12px; line-height: 19px; border-top: 1px solid var(--line); }
+    .weekly-insights { display: grid; gap: 18px; }
+    .weekly-insight { padding-bottom: 17px; border-bottom: 1px solid var(--line); }
+    .weekly-insight-label { color: var(--green-dark); font-size: 11px; line-height: 17px; font-weight: 760; }
+    .weekly-insight-text { margin-top: 5px; color: var(--ink); font-size: 14px; line-height: 22px; }
+    .weekly-form { display: grid; gap: 8px; }
+    .reward-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; align-items: center; }
+    .reward-row input {
+      height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 0 12px;
+      outline: none;
+    }
+    .reward-row input:focus-visible { outline: 3px solid rgba(30,106,77,.2); outline-offset: 2px; }
+    .reward-button[aria-pressed="true"] { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
+    .reward-button:disabled { opacity: .42; cursor: default; }
+    .points-section {
+      margin-top: 48px;
+      padding-top: 30px;
+      border-top: 1px solid var(--line-strong);
+    }
+    .points-layout { display: grid; grid-template-columns: 270px minmax(0,1fr); gap: 34px; align-items: start; }
+    .points-summary { display: grid; gap: 18px; }
+    .points-balance { display: flex; align-items: baseline; gap: 8px; }
+    .points-balance strong { color: var(--green); font-size: 26px; line-height: 32px; font-variant-numeric: tabular-nums; }
+    .points-balance span { color: var(--muted); font-size: 12px; }
+    .points-totals { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .points-total { padding: 11px 0; }
+    .points-total + .points-total { padding-left: 14px; border-left: 1px solid var(--line); }
+    .points-total strong { display: block; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .points-total span { color: var(--muted); font-size: 10px; }
+    .points-rules { display: grid; gap: 7px; }
+    .points-rule { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; line-height: 16px; }
+    .points-rule strong { color: var(--ink); white-space: nowrap; }
+    .reward-shop { min-width: 0; }
+    .reward-shop-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .catalog-form { display: grid; grid-template-columns: minmax(140px,1fr) 92px 48px; border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+    .catalog-form input { height: 44px; border: 0; border-right: 1px solid var(--line); border-radius: 0; background: var(--surface); color: var(--ink); padding: 0 12px; outline: none; }
+    .catalog-form input:focus-visible { position: relative; z-index: 1; outline: 2px solid var(--green); outline-offset: -2px; }
+    .catalog-form .primary-button { min-width: 48px; min-height: 44px; padding: 0; border-radius: 0; font-size: 0; }
+    .catalog-form .primary-button::before { content: "+"; font-size: 23px; line-height: 1; font-weight: 400; }
+    .reward-catalog { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+    .reward-item { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; min-height: 70px; padding: 12px 10px 12px 14px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); }
+    .reward-name { font-size: 13px; line-height: 19px; font-weight: 680; overflow-wrap: anywhere; }
+    .reward-cost { margin-top: 3px; color: var(--green-dark); font-size: 11px; font-weight: 700; }
+    .reward-item-actions { display: flex; align-items: center; gap: 2px; }
+    .redeem-button { min-height: 38px; border: 1px solid var(--line-strong); border-radius: 6px; background: transparent; color: var(--ink); padding: 0 12px; font-size: 12px; font-weight: 680; cursor: pointer; }
+    .redeem-button:hover { border-color: var(--green); color: var(--green-dark); }
+    .redeem-button:disabled { opacity: .4; cursor: default; }
+    .redemption-block { margin-top: 22px; }
+    .redemption-list { border-top: 1px solid var(--line); }
+    .redemption-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 12px; align-items: center; min-height: 50px; border-bottom: 1px solid var(--line); }
+    .redemption-title { font-size: 12px; font-weight: 650; }
+    .redemption-meta { margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .redemption-end { display: flex; align-items: center; gap: 3px; }
+    .redemption-cost { color: var(--red); font-size: 12px; font-weight: 720; white-space: nowrap; }
+    .empty-redemptions { padding: 14px 0; color: var(--muted); font-size: 11px; border-top: 1px solid var(--line); }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      transform: translate(-50%, 20px);
+      padding: 11px 15px;
+      border-radius: 7px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .review-overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(28,33,30,.46);
+      z-index: 30;
+    }
+    .review-overlay[hidden] { display: none; }
+    .review-dialog {
+      width: min(520px, 100%);
+      max-height: calc(100dvh - 40px);
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow-y: auto;
+    }
+    .review-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--line); background: #f8faf8; }
+    .review-kicker { color: var(--green); font-size: 11px; font-weight: 740; }
+    .review-head h2 { margin-top: 5px; }
+    .review-body { display: grid; gap: 18px; padding: 20px 22px 22px; }
+    .field-group { display: grid; gap: 8px; }
+    .field-label { color: var(--muted); font-size: 11px; font-weight: 680; }
+    textarea {
+      width: 100%;
+      min-height: 98px;
+      resize: vertical;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 11px 12px;
+      line-height: 20px;
+      outline: none;
+    }
+    textarea:focus-visible { outline: 3px solid rgba(30,106,77,.2); outline-offset: 2px; }
+    textarea::placeholder { color: var(--faint); }
+    .completion-options { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border: 1px solid var(--line-strong); border-radius: 6px; overflow: hidden; }
+    .completion-option { position: relative; min-width: 0; }
+    .completion-option + .completion-option { border-left: 1px solid var(--line); }
+    .completion-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .completion-option span { min-height: 42px; display: grid; place-items: center; padding: 0 8px; color: var(--muted); font-size: 12px; cursor: pointer; text-align: center; }
+    .completion-option input:checked + span { background: var(--green-soft); color: var(--green-dark); font-weight: 720; }
+    .completion-option input:focus-visible + span { outline: 2px solid var(--green); outline-offset: -2px; }
+    .completion-option input:disabled + span { opacity: .42; cursor: not-allowed; }
+    .review-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+    .secondary-button { min-height: 42px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--muted); padding: 0 15px; cursor: pointer; }
+    .secondary-button:hover { background: var(--surface-soft); color: var(--ink); }
+    .process-list { display: grid; gap: 9px; }
+    .process-step { min-height: 46px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 13px; cursor: pointer; }
+    .process-step input[type="checkbox"] { width: 20px; height: 20px; margin: 0; accent-color: var(--green); flex: 0 0 auto; }
+    .process-step:has(input:checked) { border-color: #a9cbbb; background: #f2f8f4; }
+    .process-choice { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); border: 1px solid var(--line-strong); border-radius: 6px; overflow: hidden; }
+    .process-choice label { position: relative; }
+    .process-choice label + label { border-left: 1px solid var(--line); }
+    .process-choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .process-choice span { min-height: 44px; display: grid; place-items: center; padding: 0 10px; color: var(--muted); font-size: 12px; cursor: pointer; text-align: center; }
+    .process-choice input:checked + span { background: var(--green-soft); color: var(--green-dark); font-weight: 720; }
+    .process-note { color: var(--muted); font-size: 11px; line-height: 17px; }
+    .process-progress { display: flex; align-items: center; gap: 6px; }
+    .process-progress span { width: 24px; height: 3px; background: var(--line-strong); }
+    .process-progress span.active { background: var(--green); }
+    .decision-copy { margin: 0; color: var(--muted); font-size: 13px; line-height: 21px; }
+    .decision-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .decision-button {
+      min-height: 66px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 10px 14px;
+      font-weight: 720;
+      cursor: pointer;
+    }
+    .decision-button:hover { border-color: var(--green); background: #f4f8f5; }
+    .decision-button.primary { border-color: var(--green); background: var(--green); color: #fff; }
+    .decision-button.primary:hover { background: var(--green-dark); }
+    .decision-button:focus-visible { outline: 3px solid rgba(30,106,77,.2); outline-offset: 2px; }
+    .review-notice { padding: 11px 12px; border-left: 3px solid var(--amber); background: var(--amber-soft); color: #684511; font-size: 12px; line-height: 19px; }
+    .review-notice[hidden] { display: none; }
+    .correction-option[hidden], .process-step[hidden] { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 940px) {
+      .workspace { grid-template-columns: 1fr; gap: 36px; }
+      .side { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+      .task-form { grid-template-columns: minmax(160px, 1fr) minmax(150px, .8fr) 112px 48px; }
+      .habit-overview { grid-template-columns: 160px minmax(0,1fr); gap: 18px; }
+      .calendar-days { grid-template-columns: repeat(7, minmax(32px, 1fr)); }
+      .weekly-layout { grid-template-columns: 1fr; gap: 18px; }
+      .points-layout { grid-template-columns: 1fr; gap: 22px; }
+    }
+    @media (max-width: 820px) {
+      .side { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .app-shell { padding-left: 16px; padding-right: 16px; padding-top: 12px; }
+      .topbar { min-height: 54px; padding-bottom: 12px; }
+      .hero { min-height: 0; align-items: stretch; flex-direction: column; gap: 22px; padding: 28px 0 22px; }
+      h1 { font-size: 27px; line-height: 35px; }
+      .date-nav { width: 100%; justify-content: space-between; }
+      .date-display { flex: 1; }
+      .stats { grid-template-columns: 1fr; margin-bottom: 30px; }
+      .stat { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 15px; }
+      .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
+      .stat-label { order: -1; margin: 0; }
+      .stat-value { font-size: 18px; line-height: 24px; }
+      .habit-overview { grid-template-columns: 1fr; gap: 14px; margin-top: -10px; }
+      .habit-summary { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+      .fixed-schedule { margin-top: -6px; }
+      .schedule-grid { grid-template-columns: 1fr; }
+      .schedule-item:nth-child(odd), .schedule-item:nth-child(even) { padding-left: 0; padding-right: 0; border-left: 0; }
+      .calendar-week { grid-template-columns: 34px minmax(0,1fr); gap: 5px; }
+      .calendar-day { height: 48px; }
+      .task-form { grid-template-columns: 1fr 1fr 48px; }
+      .task-form #taskPreset { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid var(--line); }
+      .task-form #taskMinimum { border-bottom: 0; }
+      .task-form.custom-task #taskTitle { grid-column: 1 / -1; border-top: 1px solid var(--line); border-bottom: 0; }
+      .weekly-review { margin-top: 38px; }
+      .points-section { margin-top: 38px; }
+      .reward-catalog { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 460px) {
+      .brand-sub { display: none; }
+      .workspace { gap: 30px; }
+      .task-row { grid-template-columns: auto minmax(0, 1fr); gap: 11px; }
+      .task-actions { grid-column: 2; justify-content: flex-end; }
+      .start-button { flex: 1; }
+      .timer-value { font-size: 38px; }
+      .completion-options { grid-template-columns: 1fr; }
+      .completion-option + .completion-option { border-left: 0; border-top: 1px solid var(--line); }
+      .review-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .review-actions button { width: 100%; }
+      .decision-actions { grid-template-columns: 1fr; }
+      .weekly-head { align-items: start; flex-direction: column; gap: 4px; }
+      .weekly-metrics { grid-template-columns: 1fr; }
+      .weekly-metric { display: flex; align-items: baseline; justify-content: space-between; text-align: left; padding: 11px 14px; }
+      .weekly-metric + .weekly-metric { border-left: 0; border-top: 1px solid var(--line); }
+      .weekly-metric span { order: -1; margin: 0; }
+      .reward-row { grid-template-columns: 1fr; }
+      .reward-row button { width: 100%; }
+      .catalog-form { grid-template-columns: minmax(0,1fr) 84px 48px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="36" height="36" rx="8" fill="#237452"/>
+          <path d="M11 12.5c3.8 0 6.8 1 9 3v14c-2.2-2-5.2-3-9-3v-14Z" fill="white" fill-opacity=".96"/>
+          <path d="M29 12.5c-3.8 0-6.8 1-9 3v14c2.2-2 5.2-3 9-3v-14Z" fill="white" fill-opacity=".78"/>
+          <path d="M20 15.5v14" stroke="#195A3E" stroke-width="1.2"/>
+        </svg>
+        <div>
+          <div class="brand-name">知时</div>
+          <div class="brand-sub">学习打卡</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="icon-button" id="exportButton" type="button" title="导出数据" aria-label="导出数据">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3v9m0 0 3-3m-3 3L7 9M4 13.5v2.2c0 .7.6 1.3 1.3 1.3h9.4c.7 0 1.3-.6 1.3-1.3v-2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="icon-button" id="importButton" type="button" title="导入数据" aria-label="导入数据">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 13V4m0 0L7 7m3-3 3 3M4 12.5v3.2c0 .7.6 1.3 1.3 1.3h9.4c.7 0 1.3-.6 1.3-1.3v-3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <input class="sr-only" id="importFile" type="file" accept="application/json,.json">
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow" id="weekdayLabel"></div>
+        <h1 id="heroTitle">今天，专心学一点</h1>
+      </div>
+      <div class="date-nav" aria-label="日期选择">
+        <button class="icon-button" id="prevDate" type="button" title="前一天" aria-label="前一天">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12 5-5 5 5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="date-display icon-button" id="todayButton" type="button" title="回到今天" aria-label="回到今天"></button>
+        <button class="icon-button" id="nextDate" type="button" title="后一天" aria-label="后一天">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m8 5 5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="学习统计">
+      <div class="stat"><div class="stat-value" id="studyTimeStat">0 分钟</div><div class="stat-label">当日专注</div></div>
+      <div class="stat"><div class="stat-value" id="doneStat">0/0</div><div class="stat-label">已完成计划</div></div>
+      <div class="stat"><div class="stat-value" id="rateStat">0%</div><div class="stat-label">完成率</div></div>
+      <div class="stat"><div class="stat-value" id="pointsStat">0</div><div class="stat-label">可用积分</div></div>
+    </section>
+
+    <section class="habit-overview" aria-label="学习习惯">
+      <div class="habit-summary">
+        <div class="habit-streak-block"><div class="habit-streak"><strong id="streakValue">0</strong><span>天连续学习</span></div><div class="streak-hint" id="streakHint"></div></div>
+        <div class="habit-time-row"><label for="habitTime">固定时段</label><input id="habitTime" type="time" value="21:00"></div>
+        <label class="routine-toggle"><input id="dailyRoutine" type="checkbox" checked><span>自动安排每日学习计划</span></label>
+      </div>
+      <div class="calendar-strip" id="calendarStrip" aria-label="上周、本周和下周日期"></div>
+    </section>
+
+    <section class="fixed-schedule" aria-labelledby="fixedScheduleTitle">
+      <div class="section-head"><h2 id="fixedScheduleTitle">固定安排</h2><span class="count">已自动加入每日计划</span></div>
+      <div class="schedule-grid">
+        <div class="schedule-item"><span class="schedule-day">周一–周四</span><span class="schedule-name">放学到家</span><span class="schedule-time">17:00</span></div>
+        <div class="schedule-item"><span class="schedule-day">周五</span><span class="schedule-name">放学到家</span><span class="schedule-time">15:00</span></div>
+        <div class="schedule-item"><span class="schedule-day">周五</span><span class="schedule-name">英语辅导班</span><span class="schedule-time">18:30–20:30</span></div>
+        <div class="schedule-item"><span class="schedule-day">周日</span><span class="schedule-name">中国象棋课</span><span class="schedule-time">08:30–11:30</span></div>
+        <div class="schedule-item"><span class="schedule-day">周日</span><span class="schedule-name">语文辅导班</span><span class="schedule-time">15:30–17:30</span></div>
+        <div class="schedule-item"><span class="schedule-day">周三</span><span class="schedule-name">语文听写</span><span class="schedule-time">20:30</span></div>
+        <div class="schedule-item"><span class="schedule-day">周六</span><span class="schedule-name">复习卷 + 英语听写</span><span class="schedule-time">09:00 起</span></div>
+        <div class="schedule-item"><span class="schedule-day">周日</span><span class="schedule-name">口头总结本周学习</span><span class="schedule-time">19:30</span></div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div>
+        <div class="section-head"><h2>计划清单</h2><span class="count" id="taskCount">0 项</span></div>
+        <form class="task-form" id="taskForm">
+          <select id="taskPreset" aria-label="计划任务">
+            <optgroup label="每日学习环节">
+              <option value="schoolHomework">学校作业</option>
+              <option value="tutoringHomework">辅导班作业</option>
+              <option value="preview">课前预习</option>
+              <option value="review">课后复习</option>
+            </optgroup>
+            <optgroup label="专项练习">
+              <option value="math">数学练习</option>
+              <option value="chinese">语文背诵</option>
+              <option value="english">英语单词</option>
+              <option value="science">科学复习</option>
+              <option value="reading">课外阅读</option>
+              <option value="chess">象棋</option>
+              <option value="other">其他</option>
+            </optgroup>
+            <optgroup label="周末与家长任务">
+              <option value="reviewPaper">周末复习卷</option>
+              <option value="chineseDictation">语文听写</option>
+              <option value="englishDictation">英语听写</option>
+              <option value="weeklySummary">一周口头总结</option>
+            </optgroup>
+          </select>
+          <input id="taskMinimum" maxlength="60" autocomplete="off" placeholder="最低完成量，例如 5 个" aria-label="最低完成量">
+          <select id="taskEstimate" aria-label="预计时长">
+            <option value="15">15 分钟</option><option value="25">25 分钟</option><option value="30" selected>30 分钟</option><option value="45">45 分钟</option><option value="60">60 分钟</option><option value="90">90 分钟</option>
+          </select>
+          <button class="primary-button" type="submit" aria-label="添加计划" title="添加计划">添加</button>
+          <input id="taskTitle" maxlength="80" autocomplete="off" placeholder="输入具体任务" aria-label="具体任务" hidden>
+        </form>
+        <div class="task-list" id="taskList"></div>
+      </div>
+
+      <aside class="side">
+        <section class="timer-card">
+          <div class="card-head"><span class="card-label">专注计时</span><span class="status-pill" id="timerStatus">等待开始</span></div>
+          <div class="timer-body" id="timerBody"></div>
+        </section>
+        <section id="sessionSection">
+          <div class="section-head"><h2>打卡记录</h2><span class="count" id="sessionCount">0 次</span></div>
+          <div class="session-list" id="sessionList"></div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="points-section" aria-labelledby="pointsTitle">
+      <div class="weekly-head">
+        <h2 id="pointsTitle">积分与奖励</h2>
+        <span class="weekly-range">用学习记录积累，不为勾选本身计分</span>
+      </div>
+      <div class="points-layout">
+        <div class="points-summary">
+          <div>
+            <div class="points-balance"><strong id="pointsBalance">0</strong><span>可用积分</span></div>
+            <div class="points-totals">
+              <div class="points-total"><strong id="pointsEarned">0</strong><span>累计获得</span></div>
+              <div class="points-total"><strong id="pointsSpent">0</strong><span>累计兑换</span></div>
+            </div>
+          </div>
+          <div class="points-rules" aria-label="积分规则">
+            <div class="points-rule"><span>不足 1 分钟</span><strong>不计分</strong></div>
+            <div class="points-rule"><span>未达到最低量</span><strong>+1</strong></div>
+            <div class="points-rule"><span>学校作业完成并检查</span><strong>+8</strong></div>
+            <div class="points-rule"><span>辅导班作业完成并检查</span><strong>+6</strong></div>
+            <div class="points-rule"><span>完成预习 / 复习</span><strong>各 +3</strong></div>
+            <div class="points-rule"><span>阅读 / 象棋练习</span><strong>+3 / +5</strong></div>
+            <div class="points-rule"><span>参加周日象棋课</span><strong>+8</strong></div>
+            <div class="points-rule"><span>听写 / 周末复习卷</span><strong>+5 / +8</strong></div>
+            <div class="points-rule"><span>一周口头总结</span><strong>+5</strong></div>
+            <div class="points-rule"><span>规范完成作业准备</span><strong>+2</strong></div>
+            <div class="points-rule"><span>发现并改正错误</span><strong>+2</strong></div>
+            <div class="points-rule"><span>当天有效专注满 30 分钟</span><strong>+2</strong></div>
+            <div class="points-rule"><span>当天核心任务全部完成</span><strong>+5</strong></div>
+            <div class="points-rule"><span>每周认真学习达到 5 天</span><strong>+10</strong></div>
+          </div>
+        </div>
+        <div class="reward-shop">
+          <div class="reward-shop-head"><h2>奖励商店</h2><span class="count" id="rewardCount">0 项</span></div>
+          <form class="catalog-form" id="rewardForm">
+            <input id="rewardName" maxlength="80" autocomplete="off" placeholder="添加一个想要的奖励" aria-label="奖励名称" required>
+            <input id="rewardCost" type="number" min="1" max="9999" step="1" value="50" aria-label="所需积分" required>
+            <button class="primary-button" type="submit" aria-label="添加奖励" title="添加奖励">添加</button>
+          </form>
+          <div class="reward-catalog" id="rewardCatalog"></div>
+          <div class="redemption-block" id="redemptionBlock">
+            <div class="section-head"><h2>兑换记录</h2><span class="count" id="redemptionCount">0 次</span></div>
+            <div class="redemption-list" id="redemptionList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="weekly-review" aria-labelledby="weeklyTitle">
+      <div class="weekly-head">
+        <h2 id="weeklyTitle">本周总结</h2>
+        <span class="weekly-range" id="weeklyRange"></span>
+      </div>
+      <div class="weekly-layout">
+        <div class="weekly-overview">
+          <div class="weekly-metrics">
+            <div class="weekly-metric"><strong id="weeklyPlans">0/0</strong><span>完成计划</span></div>
+            <div class="weekly-metric"><strong id="weeklyTime">0 分钟</strong><span>专注时长</span></div>
+            <div class="weekly-metric"><strong id="weeklyDays">0 天</strong><span>学习天数</span></div>
+          </div>
+          <div class="weekly-progress"><span id="weeklyProgress" style="width:0%"></span></div>
+          <div class="weekly-feedback" id="weeklyFeedback"></div>
+        </div>
+        <div class="weekly-insights">
+          <div class="weekly-insight">
+            <div class="weekly-insight-label">自动总结</div>
+            <div class="weekly-insight-text" id="weeklyHighlight"></div>
+          </div>
+          <div class="weekly-insight">
+            <div class="weekly-insight-label">下周建议</div>
+            <div class="weekly-insight-text" id="weeklySuggestion"></div>
+          </div>
+          <form class="weekly-form" id="weeklyReviewForm">
+          <div class="field-group">
+            <label class="field-label" for="weeklyReward">本周奖励</label>
+            <div class="reward-row">
+              <input id="weeklyReward" maxlength="100" autocomplete="off" placeholder="例如：周末看一场电影">
+              <button class="secondary-button reward-button" id="claimReward" type="button" aria-pressed="false" disabled>领取奖励</button>
+            </div>
+          </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="review-overlay" id="reviewOverlay" hidden>
+    <section class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="reviewTitle">
+      <div class="review-head">
+        <div class="review-kicker" id="reviewDuration"></div>
+        <h2 id="reviewTitle">记录本次学习</h2>
+      </div>
+      <form class="review-body" id="reviewForm">
+        <div class="review-notice" id="reviewCheckNotice" hidden>这次作业还没有检查，记录会保留“未完成检查”状态，也不会获得检查积分。稍后可在计划清单中选择“去检查”。</div>
+        <div class="field-group">
+          <label class="field-label" for="reviewSummary">实际完成了什么（达到下限时必填）</label>
+          <textarea id="reviewSummary" maxlength="300" placeholder="例如：背了 18 个单词，错词重新过了一遍"></textarea>
+        </div>
+        <fieldset class="field-group" style="border:0;padding:0;margin:0">
+          <legend class="field-label">完成情况</legend>
+          <div class="completion-options">
+            <label class="completion-option"><input type="radio" name="completion" value="short"><span>未达到下限</span></label>
+            <label class="completion-option"><input type="radio" name="completion" value="met" checked><span>达到下限</span></label>
+            <label class="completion-option"><input type="radio" name="completion" value="exceeded"><span>超额完成</span></label>
+          </div>
+        </fieldset>
+        <label class="process-step correction-option" id="reviewCorrectionGroup" hidden><input id="reviewCorrectedErrors" type="checkbox"><span>我发现并改正了错误</span></label>
+        <div class="review-actions">
+          <button class="secondary-button" id="skipReview" type="button">仅保存时长</button>
+          <button class="primary-button" type="submit">保存记录</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <div class="review-overlay" id="homeworkStartOverlay" hidden>
+    <section class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="homeworkStartTitle">
+      <div class="review-head">
+        <div class="process-progress" aria-hidden="true"><span class="active"></span><span></span><span></span></div>
+        <h2 id="homeworkStartTitle" style="margin-top:8px">作业准备</h2>
+      </div>
+      <form class="review-body" id="homeworkStartForm">
+        <div class="process-list">
+          <label class="process-step"><input id="homeworkReadQuestion" type="checkbox"><span>我已经认真读题，知道题目要我做什么</span></label>
+          <label class="process-step"><input id="homeworkKeywords" type="checkbox"><span>我已经圈出条件、问题、单位和关键词</span></label>
+        </div>
+        <fieldset class="field-group" style="border:0;padding:0;margin:0">
+          <legend class="field-label">这次作业需要草稿纸吗？</legend>
+          <div class="process-choice">
+            <label><input type="radio" name="scratchChoice" value="used"><span>需要</span></label>
+            <label><input type="radio" name="scratchChoice" value="not_needed"><span>不需要</span></label>
+          </div>
+        </fieldset>
+        <label class="process-step" id="scratchReadyRow" hidden><input id="homeworkScratchReady" type="checkbox"><span>草稿纸已经准备好</span></label>
+        <div class="review-actions">
+          <button class="secondary-button" id="cancelHomeworkStart" type="button">取消</button>
+          <button class="primary-button" id="beginHomework" type="submit" disabled>开始作答</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <div class="review-overlay" id="homeworkCheckDecisionOverlay" hidden>
+    <section class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="homeworkCheckDecisionTitle" aria-describedby="homeworkCheckDecisionCopy">
+      <div class="review-head">
+        <div class="review-kicker">结束作业前确认</div>
+        <h2 id="homeworkCheckDecisionTitle">作业检查过了吗？</h2>
+      </div>
+      <div class="review-body">
+        <p class="decision-copy" id="homeworkCheckDecisionCopy">请按真实情况选择。完成检查可以减少漏题和粗心错误；还没检查也可以先保存，本次记录会明确标记。</p>
+        <div class="decision-actions">
+          <button class="decision-button" id="homeworkNotChecked" type="button">还没检查</button>
+          <button class="decision-button primary" id="homeworkAlreadyChecked" type="button">已经检查</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="review-overlay" id="homeworkCheckOverlay" hidden>
+    <section class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="homeworkCheckTitle">
+      <div class="review-head">
+        <div class="process-progress" aria-hidden="true"><span class="active"></span><span class="active"></span><span class="active"></span></div>
+        <h2 id="homeworkCheckTitle" style="margin-top:8px">确认三项检查</h2>
+      </div>
+      <form class="review-body" id="homeworkCheckForm">
+        <div class="process-list">
+          <label class="process-step"><input id="checkMissing" type="checkbox"><span>检查是否有漏题</span></label>
+          <label class="process-step"><input id="checkCalculation" type="checkbox"><span>检查计算、符号和单位</span></label>
+          <label class="process-step"><input id="checkComplete" type="checkbox"><span>检查答案是否完整、书写是否清楚</span></label>
+        </div>
+        <div class="review-actions">
+          <button class="secondary-button" id="backHomeworkCheck" type="button">返回上一步</button>
+          <button class="primary-button" id="finishHomeworkCheck" type="submit" disabled>完成检查</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+      const STORAGE_KEY = "zhishi-study-checkin-v1";
+      const MIN_VALID_SECONDS = 60;
+      const PLAN_VERSION = 1;
+      const WORKFLOW_PRIORITY = { homework:0, preview:2, review:3, standard:9 };
+      const ROUTINE_PRIORITY = { "school-homework":0, "tutoring-homework":1, "review-paper":1, preview:2, review:3, reading:4, chess:5, "dictation-chinese":6, "dictation-english":6, "class-english":7, "class-chinese":7, "weekly-summary":8 };
+      const TITLE_WORKFLOW = { "完成作业":"homework", "学校作业":"homework", "辅导班作业":"homework", "周末复习卷":"homework", "课前预习":"preview", "课后复习":"review" };
+      const TITLE_ROUTINE = { "完成作业":"school-homework", "学校作业":"school-homework", "课前预习":"preview", "课后复习":"review", "课外阅读":"reading", "象棋":"chess", "中国象棋":"chess" };
+      const REWARD_CATALOG_VERSION = 3;
+      const COLORS = { "数学":"#3977a9", "语文":"#b5534a", "英语":"#237452", "科学":"#a87925", "阅读":"#7562a5", "象棋":"#8a5a3b", "学习":"#4c7f8c", "其他":"#65706a" };
+      const DEFAULT_REWARDS = [
+        { id:"reward-family-choice", title:"选择一次家庭游戏或当天菜单", cost:40 },
+        { id:"reward-break", title:"自由娱乐 30 分钟", cost:50 },
+        { id:"reward-book", title:"买一本喜欢的书", cost:60 },
+        { id:"reward-shaved-ice", title:"吃沙冰", cost:100 },
+        { id:"reward-zhaoyiming", title:"赵一鸣买吃的", cost:150 },
+        { id:"reward-weekend-choice", title:"选择一次周末活动或家庭电影", cost:180 },
+        { id:"reward-feast", title:"吃一顿大餐", cost:250 }
+      ];
+      const TASK_PRESETS = {
+        schoolHomework: { title:"学校作业", subject:"学习", minimum:"完成老师当天布置的作业并检查", estimate:"45", workflow:"homework", routineKey:"school-homework" },
+        tutoringHomework: { title:"辅导班作业", subject:"学习", minimum:"完成语文或英语辅导班作业", estimate:"30", workflow:"homework", routineKey:"tutoring-homework" },
+        preview: { title:"课前预习", subject:"学习", minimum:"浏览 1 个小节并标记疑问", estimate:"15", workflow:"preview" },
+        review: { title:"课后复习", subject:"学习", minimum:"回忆 3 个重点", estimate:"15", workflow:"review" },
+        homework: { title:"完成作业", subject:"学习", minimum:"完成当天作业并检查", estimate:"45", workflow:"homework" },
+        reviewPaper: { title:"周末复习卷", subject:"学习", minimum:"完成 1 张语文或数学复习卷并订正", estimate:"60", workflow:"homework", routineKey:"review-paper" },
+        chineseDictation: { title:"语文听写（家长）", subject:"语文", minimum:"完成 1 次听写并订正错字", estimate:"15", workflow:"standard", routineKey:"dictation-chinese" },
+        englishDictation: { title:"英语听写（家长）", subject:"英语", minimum:"完成 1 次听写并订正错词", estimate:"15", workflow:"standard", routineKey:"dictation-english" },
+        weeklySummary: { title:"口头总结本周学习（家长）", subject:"学习", minimum:"说出本周收获、困难和下周目标", estimate:"15", workflow:"standard", routineKey:"weekly-summary" },
+        math: { title:"数学练习", subject:"数学", minimum:"至少做 3 道题", estimate:"30" },
+        chinese: { title:"语文背诵", subject:"语文", minimum:"至少背 1 段", estimate:"25" },
+        english: { title:"背诵 30 个英语单词", subject:"英语", minimum:"至少记住 5 个", estimate:"25" },
+        science: { title:"科学复习", subject:"科学", minimum:"至少复习 1 个知识点", estimate:"25" },
+        reading: { title:"课外阅读", subject:"阅读", minimum:"至少读 5 页", estimate:"45" },
+        chess: { title:"象棋", subject:"象棋", minimum:"至少完成一盘", estimate:"30" },
+        other: { title:"", subject:"其他", minimum:"", estimate:"30" }
+      };
+      const $ = (id) => document.getElementById(id);
+      const svgTrash = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M4 5h10M6.5 5V3.5h5V5M5.5 5l.6 9h5.8l.6-9M7.5 7.5v4M10.5 7.5v4" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const svgEdit = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m5 12.8.6-2.7 6.6-6.6a1.1 1.1 0 0 1 1.6 0l.7.7a1.1 1.1 0 0 1 0 1.6l-6.6 6.6-2.9.4ZM11.4 4.3l2.3 2.3M4 15h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+      function dateKey(value = new Date()) {
+        const date = value instanceof Date ? value : new Date(value);
+        return [date.getFullYear(), String(date.getMonth()+1).padStart(2,"0"), String(date.getDate()).padStart(2,"0")].join("-");
+      }
+      function dateFromKey(key) { const [y,m,d] = key.split("-").map(Number); return new Date(y, m-1, d); }
+      function shiftDate(key, days) { const d = dateFromKey(key); d.setDate(d.getDate()+days); return dateKey(d); }
+      function uid(prefix) { return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
+      function migrateRewards(rewards, preferences) {
+        const next = (Array.isArray(rewards) ? rewards : []).map(reward=>({...reward}));
+        if (preferences.rewardCatalogVersion>=REWARD_CATALOG_VERSION) return next;
+        DEFAULT_REWARDS.forEach(defaultReward=>{
+          const index=next.findIndex(reward=>reward.id===defaultReward.id || reward.title===defaultReward.title);
+          if(index>=0) next[index]={...next[index],title:defaultReward.title,cost:defaultReward.cost};
+          else next.push({...defaultReward});
+        });
+        preferences.rewardCatalogVersion=REWARD_CATALOG_VERSION;
+        return next;
+      }
+      function plannedTask(day, routineKey, title, subject, minimumTarget, estimateMinutes, plannedTime, workflow="standard", kind="study") {
+        return { id:uid(`plan-${routineKey}`), date:day, routineKey, title, subject, minimumTarget, estimateMinutes, plannedTime, workflow, kind, autoPlanned:true, done:false };
+      }
+      function studyPlanTasks(day) {
+        const weekday=dateFromKey(day).getDay();
+        const weekdayTimes={ school:"17:20", tutoring:"18:20", preview:"19:00", review:"19:20", reading:"19:40", chess:"20:10" };
+        const times=weekday===5
+          ? { school:"15:20", tutoring:"16:10", preview:"16:50", review:"20:45", reading:"17:15", chess:"21:05" }
+          : weekday===6
+            ? { school:"14:00", tutoring:"15:00", preview:"16:00", review:"16:20", reading:"16:40", chess:"17:10" }
+            : weekday===0
+              ? { school:"13:15", tutoring:"18:00", preview:"14:55", review:"18:40", reading:"19:05", chess:"08:30" }
+              : weekdayTimes;
+        const tutoringSubject=[0,1,2].includes(weekday) ? "语文" : "英语";
+        const previewTitle=weekday===5 ? "英语辅导班课前预习" : weekday===0 ? "语文辅导班课前预习" : "第二天课程预习";
+        const reviewTitle=weekday===5 ? "英语辅导班课后复习" : weekday===0 ? "语文辅导班课后复习" : "当天课程复习";
+        const tasks=[
+          plannedTask(day,"school-homework","学校作业","学习","完成老师当天布置的作业并检查",45,times.school,"homework"),
+          plannedTask(day,"tutoring-homework",`${tutoringSubject}辅导班作业`,tutoringSubject,"完成辅导班作业并订正",30,times.tutoring,"homework"),
+          plannedTask(day,"preview",previewTitle,weekday===5?"英语":weekday===0?"语文":"学习","浏览内容并标记疑问",15,times.preview,"preview"),
+          plannedTask(day,"review",reviewTitle,weekday===5?"英语":weekday===0?"语文":"学习","不看书回忆 3 个重点",15,times.review,"review"),
+          plannedTask(day,"reading","课外阅读","阅读","至少读 10 页",25,times.reading),
+          plannedTask(day,"chess",weekday===0?"中国象棋课":"学习中国象棋","象棋",weekday===0?"按时参加课程":"完成 1 盘对局或复盘 1 盘",weekday===0?180:20,times.chess,"standard",weekday===0?"event":"study")
+        ];
+        if(weekday===3) tasks.push(plannedTask(day,"dictation-chinese","语文听写（家长）","语文","完成听写并订正错字",15,"20:30"));
+        if(weekday===5) tasks.push(plannedTask(day,"class-english","英语辅导班","英语","按时参加课程",120,"18:30","standard","event"));
+        if(weekday===6) {
+          tasks.push(plannedTask(day,"review-paper","周末复习卷（语文 / 数学轮换）","学习","完成 1 张复习卷并订正",60,"09:00","homework"));
+          tasks.push(plannedTask(day,"dictation-english","英语听写（家长）","英语","完成听写并订正错词",15,"10:20"));
+        }
+        if(weekday===0) {
+          tasks.push(plannedTask(day,"class-chinese","语文辅导班","语文","按时参加课程",120,"15:30","standard","event"));
+          tasks.push(plannedTask(day,"weekly-summary","口头总结本周学习（家长）","学习","说出本周收获、困难和下周目标",15,"19:30"));
+        }
+        return tasks;
+      }
+      function ensureStudyPlanTasks(tasks, startDay=dateKey()) {
+        const endDay=shiftDate(weekStartKey(startDay),13);
+        for(let day=startDay; day<=endDay; day=shiftDate(day,1)) {
+          const existing=new Set(tasks.filter(task=>task.date===day).map(task=>task.routineKey).filter(Boolean));
+          studyPlanTasks(day).forEach(task=>{ if(!existing.has(task.routineKey)) tasks.push(task); });
+        }
+        return endDay;
+      }
+      function homeworkHasAllChecks(entry) {
+        const checks=entry?.homeworkProcess?.checks || {};
+        return Boolean(checks.missing && checks.calculation && checks.complete);
+      }
+      function homeworkCheckState(entry) {
+        if ((entry?.workflow || "standard") !== "homework") return null;
+        return entry.homeworkCheckStatus || (homeworkHasAllChecks(entry) ? "checked" : "unchecked");
+      }
+      function initialState() {
+        const today = dateKey();
+        const tasks=[];
+        const planGeneratedThrough=ensureStudyPlanTasks(tasks,today);
+        return {
+          selectedDate: today,
+          tasks,
+          sessions: [],
+          active: null,
+          pendingReview: null,
+          pendingHomeworkCheck: null,
+          preferences: { habitTime: "17:20", chessTaskAdded:true, dailyRoutineEnabled:true, lastRoutineDate:today, rewardCatalogVersion:REWARD_CATALOG_VERSION, planVersion:PLAN_VERSION, planGeneratedThrough },
+          weeklyReviews: {},
+          rewards: DEFAULT_REWARDS.map(reward=>({...reward})),
+          redemptions: []
+        };
+      }
+      function normalizeState(data) {
+        const tasks = (data.tasks || []).map(task => {
+          const workflow=task.workflow || TITLE_WORKFLOW[task.title] || "standard";
+          const routineKey=task.routineKey || TITLE_ROUTINE[task.title] || (workflow==="preview"?"preview":workflow==="review"?"review":null);
+          const title=routineKey==="school-homework" && task.title==="完成作业" ? "学校作业" : task.title;
+          return { ...task, title, routineKey, minimumTarget:task.minimumTarget || "", plannedTime:task.plannedTime || "", kind:task.kind || "study", workflow };
+        });
+        const today = dateKey();
+        const preferences = { habitTime:data.preferences?.habitTime || "17:20", chessTaskAdded:true, dailyRoutineEnabled:data.preferences?.dailyRoutineEnabled !== false, lastRoutineDate:data.preferences?.lastRoutineDate || "", rewardCatalogVersion:Number(data.preferences?.rewardCatalogVersion || 0), planVersion:Number(data.preferences?.planVersion || 0), planGeneratedThrough:data.preferences?.planGeneratedThrough || "" };
+        const rewards = migrateRewards(Array.isArray(data.rewards) ? data.rewards : DEFAULT_REWARDS, preferences);
+        if(preferences.dailyRoutineEnabled) preferences.planGeneratedThrough=ensureStudyPlanTasks(tasks,today);
+        preferences.planVersion=PLAN_VERSION;
+        return {
+          selectedDate: data.selectedDate || dateKey(),
+          tasks,
+          sessions: (data.sessions || []).map(session => {
+            const normalized={ ...session, summary: session.summary || "", completion: session.completion || "unreviewed", routineKey:session.routineKey || null, workflow:session.workflow || "standard", homeworkProcess:session.homeworkProcess || null, correctedErrors:Boolean(session.correctedErrors) };
+            return normalized.workflow==="homework" ? { ...normalized, homeworkCheckStatus:homeworkCheckState(normalized) } : normalized;
+          }),
+          active: data.active ? { ...data.active, routineKey:data.active.routineKey || null, workflow:data.active.workflow || "standard" } : null,
+          pendingReview: data.pendingReview ? { ...data.pendingReview, routineKey:data.pendingReview.routineKey || null, workflow:data.pendingReview.workflow || "standard", homeworkCheckStatus:homeworkCheckState(data.pendingReview) } : null,
+          pendingHomeworkCheck: data.pendingHomeworkCheck ? { ...data.pendingHomeworkCheck, homeworkCheckStage:data.pendingHomeworkCheck.homeworkCheckStage || "decision" } : null,
+          preferences,
+          weeklyReviews: data.weeklyReviews || {},
+          rewards,
+          redemptions: Array.isArray(data.redemptions) ? data.redemptions : []
+        };
+      }
+      function loadState() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (parsed && Array.isArray(parsed.tasks) && Array.isArray(parsed.sessions)) {
+            return normalizeState(parsed);
+          }
+        } catch (_) {}
+        return initialState();
+      }
+      let state = loadState();
+      let homeworkStartTaskId = null;
+      function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      save();
+      function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])); }
+      function secondsText(seconds) {
+        const safe = Math.max(0, Math.floor(seconds));
+        if (!safe) return "0 分钟";
+        if (safe < 60) return `${safe} 秒`;
+        const mins = Math.round(safe/60);
+        if (mins < 60) return `${mins} 分钟`;
+        const h = Math.floor(mins/60), m = mins%60;
+        return m ? `${h} 小时 ${m} 分` : `${h} 小时`;
+      }
+      function clockText(timestamp) { return new Intl.DateTimeFormat("zh-CN", { hour:"2-digit", minute:"2-digit", hour12:false }).format(new Date(timestamp)); }
+      function timerText(seconds) {
+        const safe = Math.max(0, Math.floor(seconds));
+        const h = Math.floor(safe/3600), m = Math.floor((safe%3600)/60), s = safe%60;
+        return h ? [h,m,s].map(n=>String(n).padStart(2,"0")).join(":") : [m,s].map(n=>String(n).padStart(2,"0")).join(":");
+      }
+      let toastTimer;
+      function toast(message) { clearTimeout(toastTimer); $("toast").textContent = message; $("toast").classList.add("show"); toastTimer=setTimeout(()=>$("toast").classList.remove("show"), 1800); }
+      function isValidSession(session) { return Number(session.durationSeconds || 0) >= MIN_VALID_SECONDS; }
+      function learningDates() { return new Set(state.sessions.filter(isValidSession).map(session => dateKey(session.startedAt))); }
+      function streakCount() {
+        const dates = learningDates();
+        let cursor = new Date();
+        if (!dates.has(dateKey(cursor))) cursor.setDate(cursor.getDate()-1);
+        let count = 0;
+        while (dates.has(dateKey(cursor))) { count++; cursor.setDate(cursor.getDate()-1); }
+        return count;
+      }
+      function sessionPoints(session) {
+        if (!isValidSession(session)) return 0;
+        const hasSummary = Boolean((session.summary || "").trim());
+        if (session.completion==="short") return 1;
+        if ((session.completion!=="met" && session.completion!=="exceeded") || !hasSummary) return 0;
+        const routineKey=session.routineKey || TITLE_ROUTINE[session.taskTitle] || null;
+        if (session.workflow==="homework") {
+          if (homeworkCheckState(session)!=="checked") return 0;
+          const base={"school-homework":8,"tutoring-homework":6,"review-paper":8}[routineKey] || 6;
+          const process=session.homeworkProcess || {};
+          const prepared=Boolean(process.readQuestion && process.circledKeywords && process.scratchPaper);
+          return base + (prepared ? 2 : 0) + (session.correctedErrors ? 2 : 0);
+        }
+        if (session.workflow==="preview" || session.workflow==="review") return 3;
+        if (routineKey==="reading") return 3;
+        if (routineKey==="chess") return 5;
+        if (routineKey==="dictation-chinese" || routineKey==="dictation-english") return 5;
+        if (routineKey==="weekly-summary") return 5;
+        return 3;
+      }
+      function pointTotals() {
+        const sessionTotal = state.sessions.reduce((sum,session)=>sum+sessionPoints(session),0);
+        const sessionsByDay={};
+        state.sessions.filter(session=>sessionPoints(session)>0).forEach(session=>{
+          const day=dateKey(session.startedAt);
+          (sessionsByDay[day] ||= []).push(session);
+        });
+        const dailyFocusBonus=Object.values(sessionsByDay).filter(sessions=>sessions.reduce((sum,session)=>sum+Number(session.durationSeconds || 0),0)>=1800).length*2;
+        const coreRoutines=["school-homework","tutoring-homework","preview","review","reading"];
+        const tasksByDay={};
+        state.tasks.forEach(task=>{ (tasksByDay[task.date] ||= []).push(task); });
+        const dailyCoreBonus=Object.values(tasksByDay).filter(tasks=>{
+          const completed=new Set(tasks.filter(task=>task.done).map(task=>task.routineKey || TITLE_ROUTINE[task.title]).filter(Boolean));
+          return coreRoutines.every(key=>completed.has(key));
+        }).length*5;
+        const chessClassBonus=state.tasks.filter(task=>task.done && task.kind==="event" && task.routineKey==="chess").length*8;
+        const weeklyDays = {};
+        Object.keys(sessionsByDay).forEach(day=>{ const week=weekStartKey(day); (weeklyDays[week] ||= new Set()).add(day); });
+        const weeklyConsistencyBonus = Object.values(weeklyDays).filter(days=>days.size>=5).length * 10;
+        const earned = sessionTotal + dailyFocusBonus + dailyCoreBonus + chessClassBonus + weeklyConsistencyBonus;
+        const spent = state.redemptions.reduce((sum,item)=>sum+Number(item.cost || 0),0);
+        return { earned, spent, balance:Math.max(0,earned-spent) };
+      }
+      function renderPoints() {
+        const totals = pointTotals();
+        $("pointsStat").textContent = String(totals.balance);
+        $("pointsBalance").textContent = String(totals.balance);
+        $("pointsEarned").textContent = String(totals.earned);
+        $("pointsSpent").textContent = String(totals.spent);
+        $("rewardCount").textContent = `${state.rewards.length} 项`;
+        $("rewardCatalog").innerHTML = state.rewards.map(reward=>`<article class="reward-item" data-reward-id="${reward.id}"><div><div class="reward-name">${escapeHtml(reward.title)}</div><div class="reward-cost">${Number(reward.cost)} 积分</div></div><div class="reward-item-actions"><button class="redeem-button" type="button" data-action="redeem" ${totals.balance<Number(reward.cost)?"disabled":""}>兑换</button><button class="icon-button" type="button" data-action="delete-reward" title="删除奖励" aria-label="删除奖励 ${escapeHtml(reward.title)}">${svgTrash}</button></div></article>`).join("");
+        const history = [...state.redemptions].sort((a,b)=>b.redeemedAt-a.redeemedAt);
+        $("redemptionBlock").hidden = !history.length;
+        $("redemptionCount").textContent = `${history.length} 次`;
+        $("redemptionList").innerHTML = history.map(item=>`<div class="redemption-row" data-redemption-id="${item.id}"><div><div class="redemption-title">${escapeHtml(item.title)}</div><div class="redemption-meta">${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(item.redeemedAt))}</div></div><div class="redemption-end"><span class="redemption-cost">-${Number(item.cost)}</span><button class="icon-button" type="button" data-action="undo-redemption" title="撤销兑换" aria-label="撤销兑换 ${escapeHtml(item.title)}">↶</button></div></div>`).join("");
+      }
+      function weekStartKey(key) {
+        const date = dateFromKey(key);
+        const weekday = date.getDay() || 7;
+        date.setDate(date.getDate()-weekday+1);
+        return dateKey(date);
+      }
+
+      function renderWeeklyReview() {
+        const start = weekStartKey(state.selectedDate);
+        const end = shiftDate(start, 6);
+        const today=dateKey();
+        const reportEnd=today>=start && today<=end ? today : end;
+        const tasks = state.tasks.filter(task => task.date>=start && task.date<=reportEnd);
+        const sessions = state.sessions.filter(session => { const key=dateKey(session.startedAt); return key>=start && key<=end; });
+        const validSessions = sessions.filter(isValidSession);
+        const shortSessions = sessions.length-validSessions.length;
+        const done = tasks.filter(task=>task.done).length;
+        const rate = tasks.length ? Math.round(done/tasks.length*100) : 0;
+        const totalSeconds = validSessions.reduce((sum,session)=>sum+session.durationSeconds,0);
+        const learningDays = new Set(validSessions.map(session=>dateKey(session.startedAt))).size;
+        const homeworkSessions = validSessions.filter(session=>session.workflow==="homework");
+        const previewSessions = validSessions.filter(session=>session.workflow==="preview");
+        const reviewSessions = validSessions.filter(session=>session.workflow==="review");
+        const dictationSessions = validSessions.filter(session=>session.routineKey==="dictation-chinese" || session.routineKey==="dictation-english");
+        const weeklySummarySessions = validSessions.filter(session=>session.routineKey==="weekly-summary");
+        const review = state.weeklyReviews[start] || { reward:"", claimed:false };
+        const startDate = dateFromKey(start), endDate = dateFromKey(end);
+        $("weeklyRange").textContent = `${startDate.getMonth()+1}月${startDate.getDate()}日 – ${endDate.getMonth()+1}月${endDate.getDate()}日`;
+        $("weeklyPlans").textContent = `${done}/${tasks.length}`;
+        $("weeklyTime").textContent = secondsText(totalSeconds);
+        $("weeklyDays").textContent = `${learningDays} 天`;
+        $("weeklyProgress").style.width = `${rate}%`;
+        let feedback = "暂无学习数据";
+        let highlight = tasks.length ? `本周安排了 ${tasks.length} 项计划，还没有形成学习记录。` : "本周还没有计划和学习记录。";
+        let suggestion = "先选一个最低完成量，在固定时段完成一次预习、复习或作业。";
+        if (tasks.length || sessions.length) {
+          const subjectSeconds = validSessions.reduce((totals,session)=>{ totals[session.subject]=(totals[session.subject]||0)+session.durationSeconds; return totals; },{});
+          const topSubject = Object.entries(subjectSeconds).sort((a,b)=>b[1]-a[1])[0];
+          feedback = learningDays>=5 ? "节奏稳定" : rate>=70 ? "计划推进良好" : learningDays>=3 ? "已经形成节奏" : "正在建立习惯";
+          highlight = `本周学习 ${learningDays} 天，累计 ${secondsText(totalSeconds)}，完成 ${done}/${tasks.length} 项计划（${rate}%）`;
+          if (topSubject) highlight += `，投入最多的是${topSubject[0]}（${secondsText(topSubject[1])}）`;
+          highlight += `。完成预习 ${previewSessions.length} 次、复习 ${reviewSessions.length} 次。`;
+          highlight += ` 家长任务完成听写 ${dictationSessions.length}/2 次、口头总结 ${weeklySummarySessions.length}/1 次。`;
+          if (shortSessions) highlight += ` 另有 ${shortSessions} 次不足 1 分钟的过短记录，未计入学习天数和积分。`;
+          if (shortSessions) suggestion = `本周有 ${shortSessions} 次过短记录。下周完成真实学习后再结束计时，并写清具体完成内容。`;
+          else if (learningDays<3) suggestion = "下周先固定 3 个学习日，每天只要求完成一项最低量，先把节奏稳定下来。";
+          else if (rate<60) suggestion = "学习天数已经有基础，下周减少计划数量或调低最低完成量，优先提高完成率。";
+          else if (previewSessions.length<learningDays || reviewSessions.length<learningDays) suggestion = "下周保留当前计划量，每个学习日各安排一次短预习或短复习。";
+          else suggestion = "当前节奏和完成率较稳定，下周保持相同任务量，再增加一项小挑战即可。";
+        }
+        if (homeworkSessions.length) {
+          const readCount=homeworkSessions.filter(session=>session.homeworkProcess?.readQuestion).length;
+          const keywordCount=homeworkSessions.filter(session=>session.homeworkProcess?.circledKeywords).length;
+          const checkedCount=homeworkSessions.filter(session=>{ const checks=session.homeworkProcess?.checks||{}; return checks.missing&&checks.calculation&&checks.complete; }).length;
+          highlight += ` 作业流程完成情况：审题 ${readCount}/${homeworkSessions.length}，圈关键词 ${keywordCount}/${homeworkSessions.length}，完成检查 ${checkedCount}/${homeworkSessions.length}。`;
+          if (checkedCount<homeworkSessions.length) suggestion = `下周优先改进作业检查：每次结束前依次确认漏题、计算和答案完整性，目前完成 ${checkedCount}/${homeworkSessions.length} 次。`;
+        }
+        $("weeklyFeedback").textContent = feedback;
+        $("weeklyHighlight").textContent = highlight;
+        $("weeklySuggestion").textContent = suggestion;
+        $("weeklyReviewForm").dataset.weekKey = start;
+        $("weeklyReward").value = review.reward || "";
+        const claim = $("claimReward");
+        claim.disabled = !(review.reward || "").trim();
+        claim.setAttribute("aria-pressed", review.claimed ? "true" : "false");
+        claim.textContent = review.claimed ? "奖励已领取" : "领取奖励";
+      }
+
+      function renderHabit() {
+        const dates = learningDates();
+        const streak = streakCount();
+        const milestones = [3, 7, 14, 30, 60, 100];
+        const nextMilestone = milestones.find(value => value > streak);
+        $("streakValue").textContent = String(streak);
+        $("streakHint").textContent = streak === 0 ? "从今天开始积累" : milestones.includes(streak) ? `${streak} 天里程碑达成，奖励自己一下` : nextMilestone ? `距 ${nextMilestone} 天里程碑还差 ${nextMilestone-streak} 天` : "稳定的节奏已经形成";
+        $("habitTime").value = state.preferences.habitTime;
+        $("dailyRoutine").checked = state.preferences.dailyRoutineEnabled;
+        const currentMonday = dateFromKey(weekStartKey(dateKey()));
+        const weekGroups = [{label:"上周",offset:-7},{label:"本周",offset:0},{label:"下周",offset:7}];
+        $("calendarStrip").innerHTML = weekGroups.map(group=>{
+          const firstDay = new Date(currentMonday); firstDay.setDate(firstDay.getDate()+group.offset);
+          const days = [];
+          for (let offset=0; offset<7; offset++) {
+            const day = new Date(firstDay); day.setDate(day.getDate()+offset);
+            const key = dateKey(day);
+            const isToday = key===dateKey();
+            const weekday = new Intl.DateTimeFormat("zh-CN", { weekday:"narrow" }).format(day);
+            const classes = ["calendar-day", dates.has(key)?"studied":"", isToday?"current":"", key===state.selectedDate?"selected":""].filter(Boolean).join(" ");
+            days.push(`<button class="${classes}" type="button" data-calendar-date="${key}" ${isToday?'aria-current="date"':""} aria-label="${key}${isToday?"，今天":""}${dates.has(key)?"，有学习记录":"，无学习记录"}"><span class="calendar-weekday">${weekday}</span><span class="calendar-date">${day.getDate()}</span></button>`);
+          }
+          return `<div class="calendar-week"><span class="calendar-week-label">${group.label}</span><div class="calendar-days">${days.join("")}</div></div>`;
+        }).join("");
+      }
+
+      function syncTaskPreset() {
+        const preset = TASK_PRESETS[$("taskPreset").value] || TASK_PRESETS.other;
+        const custom = $("taskPreset").value === "other";
+        $("taskForm").classList.toggle("custom-task", custom);
+        $("taskTitle").hidden = !custom;
+        $("taskTitle").required = custom;
+        $("taskMinimum").value = preset.minimum;
+        $("taskEstimate").value = preset.estimate;
+        if (!custom) $("taskTitle").value = "";
+      }
+
+      function ensureStudyPlanWindow() {
+        state.preferences.planGeneratedThrough=ensureStudyPlanTasks(state.tasks,dateKey());
+        state.preferences.planVersion=PLAN_VERSION;
+      }
+
+      function startTask(task, homeworkProcess=null) {
+        task.date=dateKey();
+        state.active={ taskId:task.id, taskTitle:task.title, subject:task.subject, routineKey:task.routineKey||null, workflow:task.workflow||"standard", homeworkProcess, startedAt:Date.now() };
+        state.selectedDate=dateKey();
+        save(); render();
+      }
+
+      function updateHomeworkStartState() {
+        const scratch=$("homeworkStartForm").querySelector('input[name="scratchChoice"]:checked')?.value || "";
+        $("scratchReadyRow").hidden = scratch!=="used";
+        if (scratch!=="used") $("homeworkScratchReady").checked=false;
+        $("beginHomework").disabled = !($("homeworkReadQuestion").checked && $("homeworkKeywords").checked && scratch && (scratch!=="used" || $("homeworkScratchReady").checked));
+      }
+
+      function openHomeworkStart(task) {
+        homeworkStartTaskId=task.id;
+        $("homeworkStartForm").reset();
+        $("scratchReadyRow").hidden=true;
+        $("beginHomework").disabled=true;
+        $("homeworkStartOverlay").hidden=false;
+        setTimeout(()=>$("homeworkReadQuestion").focus(),0);
+      }
+
+      function renderHomeworkCheck() {
+        const pending=state.pendingHomeworkCheck;
+        const stage=pending?.homeworkCheckStage || "decision";
+        $("homeworkCheckDecisionOverlay").hidden=!pending || stage!=="decision";
+        $("homeworkCheckOverlay").hidden=!pending || stage!=="checklist";
+        if (!pending) return;
+        if (stage==="decision") {
+          setTimeout(()=>$("homeworkAlreadyChecked").focus(),0);
+          return;
+        }
+        const checks=pending.homeworkProcess?.checks || {};
+        $("backHomeworkCheck").textContent=pending.existingSessionId ? "稍后再检查" : "返回上一步";
+        $("checkMissing").checked=Boolean(checks.missing);
+        $("checkCalculation").checked=Boolean(checks.calculation);
+        $("checkComplete").checked=Boolean(checks.complete);
+        $("finishHomeworkCheck").disabled=!(checks.missing && checks.calculation && checks.complete);
+        setTimeout(()=>$("checkMissing").focus(),0);
+      }
+
+      function chooseHomeworkCheck(checked) {
+        const pending=state.pendingHomeworkCheck; if(!pending) return;
+        if (!checked && pending.existingSessionId) {
+          state.pendingHomeworkCheck=null;
+          save(); render();
+          return;
+        }
+        if (checked) {
+          state.pendingHomeworkCheck={...pending,homeworkCheckStage:"checklist",homeworkProcess:{...(pending.homeworkProcess||{}),checks:pending.homeworkProcess?.checks || {missing:false,calculation:false,complete:false}}};
+        } else {
+          const checks={missing:false,calculation:false,complete:false};
+          state.pendingReview={...pending,homeworkProcess:{...(pending.homeworkProcess||{}),checks},homeworkCheckStatus:"unchecked"};
+          state.pendingHomeworkCheck=null;
+        }
+        save(); render();
+      }
+
+      function finishHomeworkCheck() {
+        const pending=state.pendingHomeworkCheck; if(!pending) return;
+        const checks={missing:$("checkMissing").checked,calculation:$("checkCalculation").checked,complete:$("checkComplete").checked};
+        const homeworkProcess={...(pending.homeworkProcess||{}),checks};
+        if (pending.existingSessionId) {
+          state.sessions=state.sessions.map(session=>session.id===pending.existingSessionId ? {...session,homeworkProcess,homeworkCheckStatus:"checked"} : session);
+          const session=state.sessions.find(item=>item.id===pending.existingSessionId);
+          if (session && isValidSession(session) && (session.completion==="met" || session.completion==="exceeded")) {
+            state.tasks=state.tasks.map(task=>task.id===session.taskId ? {...task,done:true} : task);
+          }
+          state.pendingHomeworkCheck=null;
+          save(); render(); toast("检查完成，作业状态已更新");
+          return;
+        }
+        state.pendingReview={...pending,homeworkProcess,homeworkCheckStatus:"checked"};
+        state.pendingHomeworkCheck=null;
+        save(); render();
+      }
+
+      function render() {
+        const selected = dateFromKey(state.selectedDate);
+        const today = dateKey();
+        const isToday = state.selectedDate === today;
+        $("weekdayLabel").textContent = new Intl.DateTimeFormat("zh-CN", { weekday:"long" }).format(selected);
+        $("heroTitle").textContent = isToday ? "今天，专心学一点" : "安排好，再专心开始";
+        $("todayButton").textContent = isToday ? "今天" : new Intl.DateTimeFormat("zh-CN", { month:"long", day:"numeric" }).format(selected);
+
+        const tasks = state.tasks.filter(t=>t.date===state.selectedDate).sort((a,b)=>(ROUTINE_PRIORITY[a.routineKey]??WORKFLOW_PRIORITY[a.workflow]??9)-(ROUTINE_PRIORITY[b.routineKey]??WORKFLOW_PRIORITY[b.workflow]??9));
+        const sessions = state.sessions.filter(s=>dateKey(s.startedAt)===state.selectedDate).sort((a,b)=>b.startedAt-a.startedAt);
+        const seconds = sessions.reduce((n,s)=>n+s.durationSeconds,0);
+        const done = tasks.filter(t=>t.done).length;
+        $("studyTimeStat").textContent = secondsText(seconds);
+        $("doneStat").textContent = `${done}/${tasks.length}`;
+        $("rateStat").textContent = `${tasks.length ? Math.round(done/tasks.length*100) : 0}%`;
+        $("taskCount").textContent = `${tasks.length} 项`;
+        $("sessionCount").textContent = `${sessions.length} 次`;
+        renderHabit();
+        renderTasks(tasks, sessions);
+        renderTimer();
+        renderSessions(sessions);
+        renderHomeworkCheck();
+        renderReview();
+        renderPoints();
+        renderWeeklyReview();
+      }
+
+      function renderTasks(tasks, sessions) {
+        const list = $("taskList");
+        if (!tasks.length) { list.innerHTML = '<div class="empty-list">这一天还没有计划</div>'; return; }
+        list.innerHTML = tasks.map(task => {
+          const taskSessions=sessions.filter(s=>s.taskId===task.id);
+          const studied = taskSessions.reduce((n,s)=>n+s.durationSeconds,0);
+          const progress = Math.min(100, studied/(task.estimateMinutes*60)*100);
+          const isActive = state.active && state.active.taskId===task.id;
+          const locked = Boolean(state.active && !isActive);
+          const eventTask=task.kind==="event";
+          const latestHomeworkSession=[...taskSessions].filter(session=>session.workflow==="homework").sort((a,b)=>b.endedAt-a.endedAt)[0];
+          const needsCheck=Boolean(latestHomeworkSession && homeworkCheckState(latestHomeworkSession)==="unchecked");
+          const effectiveDone=Boolean(task.done && !needsCheck);
+          const buttonAction=needsCheck ? "resume-check" : eventTask ? "attend" : "start";
+          const buttonText=isActive ? "进行中" : needsCheck ? "去检查" : eventTask ? "到课" : "开始";
+          const buttonDisabled=isActive || locked || (!needsCheck && task.done);
+          return `<article class="task-row ${effectiveDone?'done':''} ${needsCheck?'needs-check':''}" data-task-id="${task.id}" style="--subject-color:${COLORS[task.subject]||COLORS.其他}">
+            <input class="task-check" type="checkbox" aria-label="完成 ${escapeHtml(task.title)}" ${effectiveDone?'checked':''} ${isActive?'disabled':''}>
+            <div class="task-main"><div class="task-title">${escapeHtml(task.title)}</div><div class="task-meta"><span class="subject-dot"></span><span>${escapeHtml(task.subject)}</span>${task.plannedTime?`<span>·</span><span>${escapeHtml(task.plannedTime)} 开始</span>`:""}${task.minimumTarget?`<span>·</span><span class="task-minimum">下限 ${escapeHtml(task.minimumTarget)}</span>`:""}<span>·</span><span>建议 ${task.estimateMinutes} 分钟</span>${studied?`<span>· 已学习 ${secondsText(studied)}</span>`:''}${needsCheck?`<span>·</span><span class="task-status-warning">未完成检查</span>`:""}</div><div class="task-progress"><span style="width:${progress}%"></span></div></div>
+            <div class="task-actions"><button class="start-button ${isActive?'secondary':''} ${needsCheck?'warning':''}" type="button" data-action="${buttonAction}" ${buttonDisabled?'disabled':''}>${buttonText}</button><button class="icon-button" type="button" data-action="delete" title="删除计划" aria-label="删除 ${escapeHtml(task.title)}" ${isActive?'disabled':''}>${svgTrash}</button></div>
+          </article>`;
+        }).join("");
+      }
+
+      function renderTimer() {
+        const status = $("timerStatus"), body = $("timerBody");
+        if (!state.active) {
+          status.textContent="等待开始"; status.className="status-pill";
+          const remaining = state.tasks.filter(t=>t.date===state.selectedDate && !t.done).length;
+          body.innerHTML=`<div class="timer-idle"><div><strong>尚未开始专注</strong><span>当前日期还有 ${remaining} 项待完成</span></div></div>`;
+          return;
+        }
+        status.textContent="专注中"; status.className="status-pill live";
+        const elapsed = Math.floor((Date.now()-state.active.startedAt)/1000);
+        const activeKicker=state.active.workflow==="homework" ? "正在作答" : state.active.workflow==="preview" ? "正在预习" : state.active.workflow==="review" ? "正在复习" : state.active.routineKey?.startsWith("dictation") ? "正在听写" : state.active.routineKey==="weekly-summary" ? "正在总结" : "正在学习";
+        const stopLabel=state.active.workflow==="homework" ? "结束作业" : "结束打卡";
+        body.innerHTML=`<div class="active-kicker">${activeKicker}</div><div class="active-title">${escapeHtml(state.active.taskTitle)}</div><div class="timer-value" id="timerValue">${timerText(elapsed)}</div><div class="timer-meta">${clockText(state.active.startedAt)} 开始 · ${escapeHtml(state.active.subject)}</div><div class="timer-footer"><button class="primary-button" id="stopButton" type="button">${stopLabel}</button></div>`;
+      }
+
+      function renderSessions(sessions) {
+        const section=$("sessionSection"), list=$("sessionList");
+        section.hidden=!sessions.length;
+        const completionText = { short:"未达到下限", met:"达到下限", exceeded:"超额完成", unreviewed:"待补充" };
+        list.innerHTML=sessions.map(s=>{
+          const checkState=homeworkCheckState(s);
+          const processText=s.workflow==="homework" ? (checkState==="checked" ? "已完成检查" : "未完成检查") : "";
+          const points=sessionPoints(s);
+          return `<article class="session-row" data-session-id="${s.id}" style="--subject-color:${COLORS[s.subject]||COLORS.其他}"><div class="session-main"><div class="session-title">${escapeHtml(s.taskTitle)}</div><div class="session-meta"><span class="subject-dot"></span><span>${escapeHtml(s.subject)}</span><span>${clockText(s.startedAt)}–${clockText(s.endedAt)}</span><span class="completion-mark ${s.completion==='short'?'short':''}">${completionText[s.completion]||completionText.unreviewed}</span>${processText?`<span class="completion-mark ${checkState==='unchecked'?'needs-check':''}">${processText}</span>`:""}<span>${points ? `+${points} 分` : "未计分"}</span></div>${s.summary?`<div class="session-note">${escapeHtml(s.summary)}</div>`:""}</div><div class="session-end"><span class="session-time">${secondsText(s.durationSeconds)}</span><button class="icon-button" type="button" data-action="edit-session" title="编辑学习记录" aria-label="编辑 ${escapeHtml(s.taskTitle)} 的记录">${svgEdit}</button><button class="icon-button" type="button" data-action="delete-session" title="删除记录" aria-label="删除 ${escapeHtml(s.taskTitle)} 的记录">${svgTrash}</button></div></article>`;
+        }).join("");
+      }
+
+      function renderReview() {
+        const pending = state.pendingReview;
+        if (!pending) { $("reviewOverlay").hidden = true; return; }
+        $("reviewOverlay").hidden = false;
+        $("reviewTitle").textContent = pending.taskTitle;
+        const tooShort = !isValidSession(pending);
+        const uncheckedHomework=pending.workflow==="homework" && homeworkCheckState(pending)==="unchecked";
+        $("reviewDuration").textContent = `本次专注 ${secondsText(pending.durationSeconds)}${tooShort ? " · 不足 1 分钟，仅保留记录" : ""}`;
+        $("reviewSummary").value = pending.summary || "";
+        $("reviewCheckNotice").hidden = !uncheckedHomework;
+        $("reviewCorrectionGroup").hidden = pending.workflow!=="homework" || uncheckedHomework;
+        $("reviewCorrectedErrors").checked = Boolean(pending.correctedErrors);
+        $("reviewForm").querySelectorAll('input[name="completion"]').forEach(input=>{ input.disabled=tooShort && input.value!=="short"; });
+        const choiceValue = tooShort ? "short" : (pending.completion || "met");
+        const choice = $("reviewForm").querySelector(`input[name="completion"][value="${choiceValue}"]`) || $("reviewForm").querySelector('input[value="short"]');
+        choice.checked = true;
+        updateReviewRequirements();
+        setTimeout(() => $("reviewSummary").focus(), 0);
+      }
+
+      function saveReview(summary, completion, correctedErrors=false) {
+        const pending = state.pendingReview; if (!pending) return;
+        if ((completion==="met" || completion==="exceeded") && !summary) { toast("请写下实际完成的内容"); $("reviewSummary").focus(); return; }
+        state.sessions.push({ ...pending, summary, completion, correctedErrors });
+        const canCompleteTask=pending.workflow!=="homework" || homeworkCheckState(pending)==="checked";
+        if (isValidSession(pending) && canCompleteTask && (completion === "met" || completion === "exceeded")) {
+          state.tasks = state.tasks.map(task => task.id===pending.taskId ? { ...task, done:true } : task);
+        } else if (pending.workflow==="homework" && homeworkCheckState(pending)==="unchecked") {
+          state.tasks = state.tasks.map(task => task.id===pending.taskId ? { ...task, done:false } : task);
+        }
+        state.pendingReview = null;
+        state.selectedDate = dateKey(pending.startedAt);
+        save(); render(); toast("学习记录已保存");
+      }
+
+      function updateReviewRequirements() {
+        const completion=$("reviewForm").querySelector('input[name="completion"]:checked')?.value;
+        $("reviewSummary").required = completion==="met" || completion==="exceeded";
+      }
+
+      function saveWeeklyReward(toggleClaim=false) {
+        const key = $("weeklyReviewForm").dataset.weekKey;
+        if (!key) return;
+        const previous = state.weeklyReviews[key] || { reward:"", claimed:false };
+        const reward = $("weeklyReward").value.trim();
+        let claimed = reward===previous.reward ? Boolean(previous.claimed) : false;
+        if (toggleClaim && reward) claimed = !claimed;
+        state.weeklyReviews[key] = {
+          ...previous,
+          reward,
+          claimed,
+          claimedAt: claimed ? (previous.claimedAt || Date.now()) : null,
+          updatedAt: Date.now()
+        };
+        save(); renderWeeklyReview(); toast(toggleClaim ? (claimed ? "奖励已领取" : "已取消领取") : "本周奖励已保存");
+      }
+
+      $("taskForm").addEventListener("submit", e=>{
+        e.preventDefault();
+        const presetKey=$("taskPreset").value, preset=TASK_PRESETS[presetKey] || TASK_PRESETS.other;
+        const title=presetKey==="other" ? $("taskTitle").value.trim() : preset.title;
+        if(!title) return;
+        state.tasks.push({ id:uid("task"), date:state.selectedDate, title, minimumTarget:$("taskMinimum").value.trim(), subject:preset.subject, estimateMinutes:Number($("taskEstimate").value), routineKey:preset.routineKey||null, workflow:preset.workflow||"standard", kind:"study", done:false });
+        if(presetKey==="other") $("taskTitle").value="";
+        save(); render(); (presetKey==="other" ? $("taskTitle") : $("taskPreset")).focus();
+      });
+      $("taskPreset").addEventListener("change",()=>{ syncTaskPreset(); if($("taskPreset").value==="other") $("taskTitle").focus(); });
+      $("homeworkStartForm").addEventListener("change", updateHomeworkStartState);
+      $("homeworkStartForm").addEventListener("submit", e=>{
+        e.preventDefault();
+        const task=state.tasks.find(item=>item.id===homeworkStartTaskId);
+        if(!task || $("beginHomework").disabled) return;
+        const scratchPaper=$("homeworkStartForm").querySelector('input[name="scratchChoice"]:checked')?.value;
+        const homeworkProcess={ readQuestion:true, circledKeywords:true, scratchPaper };
+        homeworkStartTaskId=null;
+        $("homeworkStartOverlay").hidden=true;
+        startTask(task, homeworkProcess);
+      });
+      $("cancelHomeworkStart").addEventListener("click",()=>{
+        homeworkStartTaskId=null;
+        $("homeworkStartOverlay").hidden=true;
+      });
+      $("homeworkAlreadyChecked").addEventListener("click",()=>chooseHomeworkCheck(true));
+      $("homeworkNotChecked").addEventListener("click",()=>chooseHomeworkCheck(false));
+      $("backHomeworkCheck").addEventListener("click",()=>{
+        if(!state.pendingHomeworkCheck) return;
+        if(state.pendingHomeworkCheck.existingSessionId) {
+          state.pendingHomeworkCheck=null;
+          save(); render();
+          return;
+        }
+        state.pendingHomeworkCheck={...state.pendingHomeworkCheck,homeworkCheckStage:"decision"};
+        save(); render();
+      });
+      $("homeworkCheckForm").addEventListener("change",()=>{
+        const checks={missing:$("checkMissing").checked,calculation:$("checkCalculation").checked,complete:$("checkComplete").checked};
+        $("finishHomeworkCheck").disabled = !(checks.missing && checks.calculation && checks.complete);
+        if(state.pendingHomeworkCheck) {
+          state.pendingHomeworkCheck={...state.pendingHomeworkCheck,homeworkProcess:{...(state.pendingHomeworkCheck.homeworkProcess||{}),checks}};
+          save();
+        }
+      });
+      $("homeworkCheckForm").addEventListener("submit", e=>{ e.preventDefault(); finishHomeworkCheck(); });
+      $("taskList").addEventListener("change", e=>{
+        const row=e.target.closest("[data-task-id]"); if(!row || !e.target.matches(".task-check")) return;
+        const task=state.tasks.find(t=>t.id===row.dataset.taskId); if(!task) return;
+        if(e.target.checked && task.kind!=="event") {
+          const verified=state.sessions.some(session=>session.taskId===task.id && isValidSession(session) && (session.completion==="met" || session.completion==="exceeded") && Boolean((session.summary||"").trim()) && (task.workflow!=="homework" || homeworkCheckState(session)==="checked"));
+          if(!verified) { e.target.checked=false; toast("完成计划需要至少 1 分钟记录和实际完成内容"); return; }
+        }
+        task.done=e.target.checked; save(); render();
+      });
+      $("taskList").addEventListener("click", e=>{
+        const button=e.target.closest("button[data-action]"), row=e.target.closest("[data-task-id]"); if(!button||!row) return;
+        const task=state.tasks.find(t=>t.id===row.dataset.taskId); if(!task) return;
+        if(button.dataset.action==="start" && !state.active){ task.workflow==="homework" ? openHomeworkStart(task) : startTask(task); }
+        if(button.dataset.action==="resume-check" && !state.active){
+          const session=[...state.sessions].filter(item=>item.taskId===task.id && item.workflow==="homework" && homeworkCheckState(item)==="unchecked").sort((a,b)=>b.endedAt-a.endedAt)[0];
+          if(session) { state.pendingHomeworkCheck={...session,existingSessionId:session.id,homeworkCheckStage:"checklist"}; save(); render(); }
+        }
+        if(button.dataset.action==="attend" && task.kind==="event" && !state.active){ task.done=true; save(); render(); toast("课程到课已记录"); }
+        if(button.dataset.action==="delete" && state.active?.taskId!==task.id){ state.tasks=state.tasks.filter(t=>t.id!==task.id); save(); render(); }
+      });
+      $("timerBody").addEventListener("click", e=>{
+        if(!e.target.closest("#stopButton") || !state.active) return;
+        const endedAt=Date.now(), active=state.active;
+        const session={ id:uid("session"), taskId:active.taskId, taskTitle:active.taskTitle, subject:active.subject, routineKey:active.routineKey||null, workflow:active.workflow||"standard", homeworkProcess:active.homeworkProcess||null, startedAt:active.startedAt, endedAt, durationSeconds:Math.max(1,Math.round((endedAt-active.startedAt)/1000)), summary:"", completion:"met", correctedErrors:false };
+        if(active.workflow==="homework") state.pendingHomeworkCheck={...session,homeworkCheckStage:"decision"}; else state.pendingReview=session;
+        state.active=null; state.selectedDate=dateKey(active.startedAt); save(); render();
+      });
+      $("sessionList").addEventListener("click", e=>{
+        const button=e.target.closest("button[data-action]"), row=e.target.closest("[data-session-id]"); if(!button||!row) return;
+        const session=state.sessions.find(s=>s.id===row.dataset.sessionId); if(!session) return;
+        if(button.dataset.action==="delete-session") state.sessions=state.sessions.filter(s=>s.id!==session.id);
+        if(button.dataset.action==="edit-session") { state.sessions=state.sessions.filter(s=>s.id!==session.id); state.pendingReview={...session}; }
+        save(); render();
+      });
+      $("reviewForm").addEventListener("submit", e=>{
+        e.preventDefault();
+        const completion=$("reviewForm").querySelector('input[name="completion"]:checked')?.value || "met";
+        saveReview($("reviewSummary").value.trim(), completion, $("reviewCorrectedErrors").checked);
+      });
+      $("reviewForm").addEventListener("change", e=>{ if(e.target.matches('input[name="completion"]')) updateReviewRequirements(); });
+      $("skipReview").addEventListener("click",()=>saveReview("", "unreviewed", false));
+      $("rewardForm").addEventListener("submit", e=>{
+        e.preventDefault();
+        const title=$("rewardName").value.trim(), cost=Math.round(Number($("rewardCost").value));
+        if(!title || !Number.isFinite(cost) || cost<1) return;
+        state.rewards.push({ id:uid("reward"), title, cost });
+        $("rewardName").value=""; save(); renderPoints(); toast("奖励已添加"); $("rewardName").focus();
+      });
+      $("rewardCatalog").addEventListener("click", e=>{
+        const button=e.target.closest("button[data-action]"), item=e.target.closest("[data-reward-id]"); if(!button||!item) return;
+        const reward=state.rewards.find(entry=>entry.id===item.dataset.rewardId); if(!reward) return;
+        if(button.dataset.action==="delete-reward") state.rewards=state.rewards.filter(entry=>entry.id!==reward.id);
+        if(button.dataset.action==="redeem") {
+          if(pointTotals().balance<Number(reward.cost)) return;
+          state.redemptions.push({ id:uid("redeem"), rewardId:reward.id, title:reward.title, cost:Number(reward.cost), redeemedAt:Date.now() });
+          toast(`已兑换：${reward.title}`);
+        }
+        save(); renderPoints();
+      });
+      $("redemptionList").addEventListener("click", e=>{
+        const button=e.target.closest("button[data-action='undo-redemption']"), row=e.target.closest("[data-redemption-id]"); if(!button||!row) return;
+        state.redemptions=state.redemptions.filter(item=>item.id!==row.dataset.redemptionId); save(); renderPoints(); toast("兑换已撤销");
+      });
+      $("weeklyReviewForm").addEventListener("submit", e=>e.preventDefault());
+      $("weeklyReward").addEventListener("input", e=>{
+        const key=$("weeklyReviewForm").dataset.weekKey;
+        const previous=state.weeklyReviews[key] || { reward:"", claimed:false };
+        const value=e.target.value.trim();
+        $("claimReward").disabled=!value;
+        const stillClaimed=Boolean(previous.claimed && value===previous.reward);
+        $("claimReward").setAttribute("aria-pressed", stillClaimed ? "true" : "false");
+        $("claimReward").textContent=stillClaimed ? "奖励已领取" : "领取奖励";
+      });
+      $("weeklyReward").addEventListener("change",()=>saveWeeklyReward(false));
+      $("claimReward").addEventListener("click",()=>saveWeeklyReward(true));
+      $("habitTime").addEventListener("change", e=>{ state.preferences.habitTime=e.target.value || "21:00"; save(); toast("固定学习时段已更新"); });
+      $("dailyRoutine").addEventListener("change", e=>{
+        state.preferences.dailyRoutineEnabled=e.target.checked;
+        if(e.target.checked) ensureStudyPlanWindow();
+        save(); render();
+        toast(e.target.checked ? "自动学习计划已开启" : "自动学习计划已关闭");
+      });
+      $("calendarStrip").addEventListener("click", e=>{ const button=e.target.closest("[data-calendar-date]"); if(!button) return; state.selectedDate=button.dataset.calendarDate; save(); render(); });
+      $("prevDate").addEventListener("click",()=>{ state.selectedDate=shiftDate(state.selectedDate,-1); save(); render(); });
+      $("nextDate").addEventListener("click",()=>{ state.selectedDate=shiftDate(state.selectedDate,1); save(); render(); });
+      $("todayButton").addEventListener("click",()=>{ state.selectedDate=dateKey(); save(); render(); });
+
+      $("exportButton").addEventListener("click",()=>{
+        const blob=new Blob([JSON.stringify({ version:5, exportedAt:new Date().toISOString(), data:state },null,2)],{type:"application/json"});
+        const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`知时学习数据-${dateKey()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast("数据已导出");
+      });
+      $("importButton").addEventListener("click",()=>$("importFile").click());
+      $("importFile").addEventListener("change", async e=>{
+        const file=e.target.files[0]; if(!file) return;
+        try {
+          const parsed=JSON.parse(await file.text()), data=parsed.data||parsed;
+          if(!Array.isArray(data.tasks)||!Array.isArray(data.sessions)) throw new Error("invalid");
+          state=normalizeState(data); save(); render(); toast("数据已导入");
+        } catch (_) { toast("无法读取这个备份文件"); }
+        e.target.value="";
+      });
+
+      setInterval(()=>{ if(state.active){ const node=$("timerValue"); if(node) node.textContent=timerText((Date.now()-state.active.startedAt)/1000); } },1000);
+      syncTaskPreset();
+      render();
+    })();
+  </script>
+</body>
+</html>
