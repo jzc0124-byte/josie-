@@ -450,9 +450,11 @@
     .points-balance strong { color: var(--gold); font-size: 28px; line-height: 34px; font-variant-numeric: tabular-nums; }
     .points-balance strong::before { content: "★"; margin-right: 7px; font-size: 16px; vertical-align: 3px; }
     .points-balance span { color: var(--muted); font-size: 13px; }
-    .points-totals { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .points-totals { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
     .points-total { padding: 11px 0; }
     .points-total + .points-total { padding-left: 14px; border-left: 1px solid var(--line); }
+    .points-total:nth-child(3) { padding-left: 0; border-left: 0; }
+    .points-total:nth-child(n+3) { border-top: 1px solid var(--line); }
     .points-total strong { display: block; font-size: 14px; font-variant-numeric: tabular-nums; }
     .points-total span { color: var(--muted); font-size: 11px; }
     .points-rules { display: grid; gap: 7px; }
@@ -621,7 +623,8 @@
     .parent-deduction-history { display: grid; gap: 7px; border-top: 1px solid var(--line); padding-top: 14px; }
     .parent-deduction-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; }
     .parent-deduction-row strong { color: var(--red); white-space: nowrap; }
-    #parentDeductionFields[hidden], #parentApprovalActions[hidden], #parentPinConfirmWrap[hidden], #parentDeductionHistory[hidden] { display: none; }
+    .parent-deduction-row strong.positive { color: var(--green-dark); }
+    #parentAdjustmentFields[hidden], #parentApprovalActions[hidden], #parentPinConfirmWrap[hidden], #parentAdjustmentHistory[hidden] { display: none; }
     .celebration {
       position: fixed;
       inset: 0;
@@ -679,6 +682,7 @@
       .weekly-review { order: 8; }
       .workspace > div { order: 0; }
       .side { display: contents; }
+      .timer-card, #sessionSection { width: 100%; }
       .timer-card { order: 1; }
       .timer-card.active { order: -1; }
       #sessionSection { order: 2; }
@@ -914,7 +918,8 @@
           <div>
             <div class="points-balance"><strong id="pointsBalance">0</strong><span>可用积分</span></div>
             <div class="points-totals">
-              <div class="points-total"><strong id="pointsEarned">0</strong><span>累计获得</span></div>
+              <div class="points-total"><strong id="pointsEarned">0</strong><span>学习获得</span></div>
+              <div class="points-total"><strong id="pointsAdded">0</strong><span>家长加分</span></div>
               <div class="points-total"><strong id="pointsSpent">0</strong><span>累计兑换</span></div>
               <div class="points-total"><strong id="pointsDeducted">0</strong><span>家长减分</span></div>
             </div>
@@ -929,6 +934,7 @@
             <div class="points-rule"><span>听写 / 周末复习卷</span><strong>+5 / +8</strong></div>
             <div class="points-rule"><span>一周口头总结</span><strong>+5</strong></div>
             <div class="points-rule"><span>洗衣 / 整理桌面 / 煮饭烧菜</span><strong>各 +5</strong></div>
+            <div class="points-rule"><span>睡前整理书桌书包 / 脏衣入篓</span><strong>完成 +1 / 未完成 -1</strong></div>
             <div class="points-rule"><span>规范完成作业准备</span><strong>+2</strong></div>
             <div class="points-rule"><span>发现并改正错误</span><strong>+2</strong></div>
             <div class="points-rule"><span>当天有效专注满 30 分钟</span><strong>+2</strong></div>
@@ -1104,29 +1110,36 @@
           </div>
           <p class="parent-help" id="parentPinHelp">口令仅保存在这台设备上，用于防止误操作。</p>
         </div>
-        <div id="parentDeductionFields" hidden>
+        <div id="parentAdjustmentFields" hidden>
+          <fieldset class="field-group" style="border:0;padding:0;margin:0 0 12px">
+            <legend class="field-label">积分操作</legend>
+            <div class="process-choice" id="parentAdjustmentType">
+              <label><input type="radio" name="adjustmentType" value="bonus" checked><span>加分</span></label>
+              <label><input type="radio" name="adjustmentType" value="deduction"><span>减分</span></label>
+            </div>
+          </fieldset>
           <div class="field-group">
-            <label class="field-label" for="parentDeductionReason">减分原因</label>
-            <select class="parent-form-input" id="parentDeductionReason">
-              <option value="不诚实打卡">不诚实打卡</option>
-              <option value="未遵守事先约定">未遵守事先约定</option>
-              <option value="行为需要改进">行为需要改进</option>
+            <label class="field-label" id="parentAdjustmentReasonLabel" for="parentAdjustmentReason">加分原因</label>
+            <select class="parent-form-input" id="parentAdjustmentReason">
+              <option value="主动帮助家人">主动帮助家人</option>
+              <option value="完成额外挑战">完成额外挑战</option>
+              <option value="表现认真负责">表现认真负责</option>
               <option value="其他">其他</option>
             </select>
           </div>
           <div class="field-group" style="margin-top:12px">
-            <label class="field-label" for="parentDeductionAmount">减分数</label>
-            <input class="parent-form-input" id="parentDeductionAmount" type="number" min="1" max="100" step="1" value="5">
+            <label class="field-label" id="parentAdjustmentAmountLabel" for="parentAdjustmentAmount">加分数</label>
+            <input class="parent-form-input" id="parentAdjustmentAmount" type="number" min="1" max="100" step="1" value="5">
           </div>
         </div>
-        <div class="parent-deduction-history" id="parentDeductionHistory" hidden></div>
+        <div class="parent-deduction-history" id="parentAdjustmentHistory" hidden></div>
         <div class="parent-decision-actions" id="parentApprovalActions" hidden>
           <button class="decision-button" type="button" data-parent-decision="rejected">本次不计分</button>
           <button class="decision-button primary" type="button" data-parent-decision="approved">确认计分</button>
         </div>
         <div class="review-actions">
           <button class="secondary-button" id="closeParentOverlay" type="button">取消</button>
-          <button class="primary-button" id="submitParentDeduction" type="submit">确认减分</button>
+          <button class="primary-button" id="submitParentAdjustment" type="submit">确认加分</button>
         </div>
       </form>
     </section>
@@ -1146,9 +1159,9 @@
       "use strict";
       const STORAGE_KEY = "zhishi-study-checkin-v1";
       const MIN_VALID_SECONDS = 60;
-      const PLAN_VERSION = 1;
+      const PLAN_VERSION = 2;
       const WORKFLOW_PRIORITY = { homework:0, preview:2, review:3, standard:9 };
-      const ROUTINE_PRIORITY = { "school-homework":0, "tutoring-homework":1, "review-paper":1, preview:2, review:3, reading:4, chess:5, "dictation-chinese":6, "dictation-english":6, "class-english":7, "class-chinese":7, "weekly-summary":8, "chore-laundry":10, "chore-table":10, "chore-cooking":10 };
+      const ROUTINE_PRIORITY = { "school-homework":0, "tutoring-homework":1, "review-paper":1, preview:2, review:3, reading:4, chess:5, "dictation-chinese":6, "dictation-english":6, "class-english":7, "class-chinese":7, "weekly-summary":8, "chore-laundry":10, "chore-table":10, "chore-cooking":10, "bedtime-deskbag":11, "bedtime-laundry":12 };
       const CORE_ROUTINES = ["school-homework","tutoring-homework","preview","review","reading"];
       const GROWTH_LEVELS = [
         { threshold:0, title:"学习新手" },
@@ -1236,7 +1249,9 @@
           plannedTask(day,"preview",previewTitle,weekday===5?"英语":weekday===0?"语文":"学习","浏览内容并标记疑问",15,times.preview,"preview"),
           plannedTask(day,"review",reviewTitle,weekday===5?"英语":weekday===0?"语文":"学习","不看书回忆 3 个重点",15,times.review,"review"),
           plannedTask(day,"reading","课外阅读","阅读","至少读 10 页",25,times.reading),
-          plannedTask(day,"chess",weekday===0?"中国象棋课":"学习中国象棋","象棋",weekday===0?"按时参加课程":"完成 1 盘对局或复盘 1 盘",weekday===0?180:20,times.chess,"standard",weekday===0?"event":"study")
+          plannedTask(day,"chess",weekday===0?"中国象棋课":"学习中国象棋","象棋",weekday===0?"按时参加课程":"完成 1 盘对局或复盘 1 盘",weekday===0?180:20,times.chess,"standard",weekday===0?"event":"study"),
+          plannedTask(day,"bedtime-deskbag","睡前整理桌子和书包","家务","桌面物品归位，学校发的 A4 纸放进文件袋",3,"21:15","standard","bedtime"),
+          plannedTask(day,"bedtime-laundry","脏衣服放进阳台洗衣篓","家务","睡前把当天脏衣服放进阳台洗衣篓",2,"21:20","standard","bedtime")
         ];
         if(weekday===3) tasks.push(plannedTask(day,"dictation-chinese","语文听写（家长）","语文","完成听写并订正错字",15,"20:30"));
         if(weekday===5) tasks.push(plannedTask(day,"class-english","英语辅导班","英语","按时参加课程",120,"18:30","standard","event"));
@@ -1257,6 +1272,19 @@
           studyPlanTasks(day).forEach(task=>{ if(!existing.has(task.routineKey)) tasks.push(task); });
         }
         return endDay;
+      }
+      function settleMissedBedtimeTasks(tasks, sessions, adjustments, today=dateKey()) {
+        let changed=false;
+        tasks.filter(task=>task.kind==="bedtime" && task.date<today).forEach(task=>{
+          const approved=sessions.some(session=>session.taskId===task.id && isApprovedSession(session) && baseSessionPoints(session)>0);
+          const adjustmentIndex=adjustments.findIndex(item=>item.sourceTaskId===task.id && item.source==="bedtime-missed");
+          if(approved && adjustmentIndex>=0) { adjustments.splice(adjustmentIndex,1); changed=true; }
+          if(!approved && adjustmentIndex<0) {
+            adjustments.push({ id:uid("bedtime-missed"), type:"deduction", amount:1, reason:`${task.title}未完成`, source:"bedtime-missed", sourceTaskId:task.id, createdAt:dateFromKey(shiftDate(task.date,1)).getTime() });
+            changed=true;
+          }
+        });
+        return changed;
       }
       function homeworkHasAllChecks(entry) {
         const checks=entry?.homeworkProcess?.checks || {};
@@ -1298,15 +1326,18 @@
         const today = dateKey();
         const preferences = { habitTime:data.preferences?.habitTime || "17:20", chessTaskAdded:true, dailyRoutineEnabled:data.preferences?.dailyRoutineEnabled !== false, lastRoutineDate:data.preferences?.lastRoutineDate || "", rewardCatalogVersion:Number(data.preferences?.rewardCatalogVersion || 0), planVersion:Number(data.preferences?.planVersion || 0), planGeneratedThrough:data.preferences?.planGeneratedThrough || "", parentPinHash:data.preferences?.parentPinHash || "" };
         const rewards = migrateRewards(Array.isArray(data.rewards) ? data.rewards : DEFAULT_REWARDS, preferences);
+        const sessions = (data.sessions || []).map(session => {
+          const normalized={ ...session, summary: session.summary || "", completion: session.completion || "unreviewed", routineKey:session.routineKey || null, workflow:session.workflow || "standard", homeworkProcess:session.homeworkProcess || null, correctedErrors:Boolean(session.correctedErrors) };
+          return normalized.workflow==="homework" ? { ...normalized, homeworkCheckStatus:homeworkCheckState(normalized) } : normalized;
+        });
+        const pointAdjustments = Array.isArray(data.pointAdjustments) ? data.pointAdjustments.map(item=>({...item,type:item.type || "deduction"})) : [];
         if(preferences.dailyRoutineEnabled) preferences.planGeneratedThrough=ensureStudyPlanTasks(tasks,today);
+        settleMissedBedtimeTasks(tasks,sessions,pointAdjustments,today);
         preferences.planVersion=PLAN_VERSION;
         return {
           selectedDate: data.selectedDate || dateKey(),
           tasks,
-          sessions: (data.sessions || []).map(session => {
-            const normalized={ ...session, summary: session.summary || "", completion: session.completion || "unreviewed", routineKey:session.routineKey || null, workflow:session.workflow || "standard", homeworkProcess:session.homeworkProcess || null, correctedErrors:Boolean(session.correctedErrors) };
-            return normalized.workflow==="homework" ? { ...normalized, homeworkCheckStatus:homeworkCheckState(normalized) } : normalized;
-          }),
+          sessions,
           active: data.active ? { ...data.active, routineKey:data.active.routineKey || null, workflow:data.active.workflow || "standard" } : null,
           pendingReview: data.pendingReview ? { ...data.pendingReview, routineKey:data.pendingReview.routineKey || null, workflow:data.pendingReview.workflow || "standard", homeworkCheckStatus:homeworkCheckState(data.pendingReview) } : null,
           pendingHomeworkCheck: data.pendingHomeworkCheck ? { ...data.pendingHomeworkCheck, homeworkCheckStage:data.pendingHomeworkCheck.homeworkCheckStage || "decision" } : null,
@@ -1314,7 +1345,7 @@
           weeklyReviews: data.weeklyReviews || {},
           rewards,
           redemptions: Array.isArray(data.redemptions) ? data.redemptions : [],
-          pointAdjustments: Array.isArray(data.pointAdjustments) ? data.pointAdjustments : []
+          pointAdjustments
         };
       }
       function loadState() {
@@ -1328,7 +1359,7 @@
       }
       let state = loadState();
       let homeworkStartTaskId = null;
-      let parentMode = "deduction";
+      let parentMode = "manage";
       let parentTargetSessionId = null;
       function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
       save();
@@ -1362,7 +1393,7 @@
         celebrationTimer=setTimeout(()=>{ node.hidden=true; },1600);
       }
       function isValidSession(session) { return Number(session.durationSeconds || 0) >= MIN_VALID_SECONDS; }
-      function isChoreSession(session) { return String(session.routineKey || "").startsWith("chore-"); }
+      function isChoreSession(session) { return /^(chore-|bedtime-)/.test(String(session.routineKey || "")); }
       function isApprovedSession(session) { return session.pointsApproval!=="pending" && session.pointsApproval!=="rejected"; }
       function learningDates() {
         return new Set(state.sessions.filter(session=>isValidSession(session) && !isChoreSession(session) && isApprovedSession(session) && sessionPoints(session)>0).map(session => dateKey(session.startedAt)));
@@ -1379,6 +1410,7 @@
         if (!isValidSession(session)) return 0;
         if (session.workflow==="homework" && homeworkCheckState(session)!=="checked") return 0;
         const routineKey=session.routineKey || TITLE_ROUTINE[session.taskTitle] || null;
+        if (String(routineKey || "").startsWith("bedtime-")) return session.completion==="met" || session.completion==="exceeded" ? 1 : 0;
         if (String(routineKey || "").startsWith("chore-")) return session.completion==="met" || session.completion==="exceeded" ? 5 : 0;
         if (session.completion==="short") return 1;
         if (session.completion!=="met" && session.completion!=="exceeded") return 0;
@@ -1423,15 +1455,16 @@
         const weeklyConsistencyBonus = Object.values(weeklyDays).filter(days=>days.size>=5).length * 10;
         const earned = sessionTotal + dailyFocusBonus + dailyCoreBonus + weeklyConsistencyBonus;
         const spent = state.redemptions.reduce((sum,item)=>sum+Number(item.cost || 0),0);
-        const deducted = state.pointAdjustments.reduce((sum,item)=>sum+Math.max(0,Number(item.amount || 0)),0);
-        return { earned, spent, deducted, balance:Math.max(0,earned-spent-deducted) };
+        const added = state.pointAdjustments.filter(item=>item.type==="bonus").reduce((sum,item)=>sum+Math.max(0,Number(item.amount || 0)),0);
+        const deducted = state.pointAdjustments.filter(item=>item.type!=="bonus").reduce((sum,item)=>sum+Math.max(0,Number(item.amount || 0)),0);
+        return { earned, added, spent, deducted, growthEarned:earned+added, balance:Math.max(0,earned+added-spent-deducted) };
       }
       function isCoreDayComplete(day) {
         const completed=new Set(approvedStudySessions(day).map(session=>session.routineKey || TITLE_ROUTINE[session.taskTitle]).filter(Boolean));
         return CORE_ROUTINES.every(key=>completed.has(key));
       }
       function renderGrowth() {
-        const earned=pointTotals().earned;
+        const earned=pointTotals().growthEarned;
         let levelIndex=GROWTH_LEVELS.length-1;
         for (let index=0; index<GROWTH_LEVELS.length; index++) {
           if (!GROWTH_LEVELS[index+1] || earned<GROWTH_LEVELS[index+1].threshold) { levelIndex=index; break; }
@@ -1460,6 +1493,7 @@
         $("pointsStat").textContent = String(totals.balance);
         $("pointsBalance").textContent = String(totals.balance);
         $("pointsEarned").textContent = String(totals.earned);
+        $("pointsAdded").textContent = String(totals.added);
         $("pointsSpent").textContent = String(totals.spent);
         $("pointsDeducted").textContent = String(totals.deducted);
         $("rewardCount").textContent = `${state.rewards.length} 项`;
@@ -1493,9 +1527,9 @@
         const isApproval=parentMode==="approval";
         const hasPin=Boolean(state.preferences.parentPinHash);
         $("parentTitle").textContent=isApproval ? "确认本次积分" : "家长积分管理";
-        $("parentDeductionFields").hidden=isApproval;
+        $("parentAdjustmentFields").hidden=isApproval;
         $("parentApprovalActions").hidden=!isApproval;
-        $("submitParentDeduction").hidden=isApproval;
+        $("submitParentAdjustment").hidden=isApproval;
         $("parentPinConfirmWrap").hidden=hasPin;
         $("parentPinRow").classList.toggle("single",hasPin);
         $("parentPinConfirm").required=!hasPin;
@@ -1504,20 +1538,37 @@
           const session=state.sessions.find(item=>item.id===parentTargetSessionId);
           const points=session ? baseSessionPoints(session) : 0;
           $("parentContext").innerHTML=session ? `<strong>${escapeHtml(session.taskTitle)}</strong><br>完成记录待确认，本次最多可计 ${points} 分。` : "这条记录已不存在。";
-          $("parentDeductionHistory").hidden=true;
+          const bedtime=String(session?.routineKey || "").startsWith("bedtime-");
+          const decisionButtons=$("parentApprovalActions").querySelectorAll("[data-parent-decision]");
+          decisionButtons[0].textContent=bedtime ? "未完成 -1" : "本次不计分";
+          decisionButtons[1].textContent=bedtime ? "确认完成 +1" : "确认计分";
+          $("parentAdjustmentHistory").hidden=true;
         } else {
           const totals=pointTotals();
-          $("parentContext").innerHTML=`当前可用积分 <strong>${totals.balance}</strong> 分。减分只针对事先约定的行为，不因做错题或成绩波动扣分。`;
+          $("parentContext").innerHTML=`当前可用积分 <strong>${totals.balance}</strong> 分。家长可以奖励额外的好表现；减分只针对事先约定的行为，不因做错题或成绩波动扣分。`;
           const history=[...state.pointAdjustments].sort((a,b)=>b.createdAt-a.createdAt).slice(0,5);
-          $("parentDeductionHistory").hidden=!history.length;
-          $("parentDeductionHistory").innerHTML=history.length ? `<span class="field-label">最近减分</span>${history.map(item=>`<div class="parent-deduction-row"><span>${escapeHtml(item.reason)} · ${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric"}).format(new Date(item.createdAt))}</span><strong>-${Number(item.amount)} 分</strong></div>`).join("")}` : "";
+          $("parentAdjustmentHistory").hidden=!history.length;
+          $("parentAdjustmentHistory").innerHTML=history.length ? `<span class="field-label">最近积分调整</span>${history.map(item=>{ const bonus=item.type==="bonus"; return `<div class="parent-deduction-row"><span>${escapeHtml(item.reason)} · ${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric"}).format(new Date(item.createdAt))}</span><strong class="${bonus?'positive':''}">${bonus?'+':'-'}${Number(item.amount)} 分</strong></div>`; }).join("")}` : "";
+          syncParentAdjustmentFields();
         }
+      }
+      function syncParentAdjustmentFields() {
+        const type=$("parentForm").querySelector('input[name="adjustmentType"]:checked')?.value || "bonus";
+        const bonus=type==="bonus";
+        const reason=$("parentAdjustmentReason");
+        const previous=reason.value;
+        const options=bonus ? ["主动帮助家人","完成额外挑战","表现认真负责","其他"] : ["不诚实打卡","未遵守事先约定","行为需要改进","其他"];
+        reason.innerHTML=options.map(value=>`<option value="${value}">${value}</option>`).join("");
+        if(options.includes(previous)) reason.value=previous;
+        $("parentAdjustmentReasonLabel").textContent=bonus ? "加分原因" : "减分原因";
+        $("parentAdjustmentAmountLabel").textContent=bonus ? "加分数" : "减分数";
+        $("submitParentAdjustment").textContent=bonus ? "确认加分" : "确认减分";
       }
       function openParentOverlay(mode, sessionId=null) {
         parentMode=mode;
         parentTargetSessionId=sessionId;
         $("parentForm").reset();
-        $("parentDeductionAmount").value="5";
+        $("parentAdjustmentAmount").value="5";
         renderParentModal();
         $("parentOverlay").hidden=false;
         setTimeout(()=>$("parentPin").focus(),0);
@@ -1534,9 +1585,15 @@
         const points=baseSessionPoints(session);
         session.pointsApproval=decision;
         session.pointsApprovedAt=Date.now();
+        const bedtime=String(session.routineKey || "").startsWith("bedtime-");
+        if(bedtime) {
+          state.pointAdjustments=state.pointAdjustments.filter(item=>!(item.source==="bedtime-missed" && item.sourceTaskId===session.taskId));
+          if(decision==="rejected") state.pointAdjustments.push({ id:uid("bedtime-missed"), type:"deduction", amount:1, reason:`${session.taskTitle}未完成`, source:"bedtime-missed", sourceTaskId:session.taskId, createdAt:Date.now() });
+          state.tasks=state.tasks.map(task=>task.id===session.taskId ? {...task,done:decision==="approved"} : task);
+        }
         save(); closeParentOverlay(); render();
         if(decision==="approved") { toast(`家长已确认，获得 ${points} 积分`); if(points) celebrate("家长确认通过",points); }
-        else toast("家长已决定本次不计分");
+        else toast(bedtime ? "已记录未完成，扣 1 分" : "家长已决定本次不计分");
       }
       function weekStartKey(key) {
         const date = dateFromKey(key);
@@ -1741,6 +1798,7 @@
       }
 
       function render() {
+        if(settleMissedBedtimeTasks(state.tasks,state.sessions,state.pointAdjustments,dateKey())) save();
         const selected = dateFromKey(state.selectedDate);
         const today = dateKey();
         const isToday = state.selectedDate === today;
@@ -1778,26 +1836,31 @@
           const isTaskToday=task.date===today;
           const taskSessions=sessions.filter(s=>s.taskId===task.id);
           const studied = taskSessions.reduce((n,s)=>n+s.durationSeconds,0);
-          const progress = Math.min(100, studied/(task.estimateMinutes*60)*100);
+          let progress = Math.min(100, studied/(task.estimateMinutes*60)*100);
           const isActive = state.active && state.active.taskId===task.id;
           const locked = (!isTaskToday && !isActive) || Boolean(state.active && !isActive);
           const eventTask=task.kind==="event";
+          const bedtimeTask=task.kind==="bedtime";
+          const missedAdjustment=state.pointAdjustments.find(item=>item.source==="bedtime-missed" && item.sourceTaskId===task.id);
+          const missed=Boolean(missedAdjustment);
           const needsCheck=taskNeedsHomeworkCheck(task,taskSessions);
           const pendingApproval=[...taskSessions].filter(session=>session.pointsApproval==="pending" && baseSessionPoints(session)>0).sort((a,b)=>b.endedAt-a.endedAt)[0];
           const latestScored=[...taskSessions].filter(session=>baseSessionPoints(session)>0).sort((a,b)=>b.endedAt-a.endedAt)[0];
           const approvalState=pendingApproval ? "pending" : latestScored?.pointsApproval==="rejected" ? "rejected" : latestScored && isApprovedSession(latestScored) ? "approved" : "";
           const effectiveDone=Boolean(task.done && !needsCheck);
-          const buttonAction=isActive ? "stop" : needsCheck ? "resume-check" : pendingApproval ? "parent-approval" : eventTask ? "attend" : "start";
-          const buttonText=isActive ? (task.workflow==="homework" ? "结束作业" : "结束打卡") : needsCheck ? "去检查" : pendingApproval ? "家长确认" : !isTaskToday ? (task.date>today ? "当天可做" : "已过日期") : eventTask ? "到课" : "开始";
-          const buttonDisabled=pendingApproval ? Boolean(state.active) : locked || (!isActive && !needsCheck && task.done);
-          const stateText=isActive ? "进行中" : needsCheck ? "待检查" : pendingApproval ? "待确认积分" : effectiveDone ? "已完成" : !isTaskToday ? (task.date>today ? "已安排" : "未完成") : "待开始";
-          const stateClass=isActive ? "active" : needsCheck || pendingApproval ? "warning" : effectiveDone ? "done" : "";
+          if(bedtimeTask && effectiveDone) progress=100;
+          const buttonAction=isActive ? "stop" : needsCheck ? "resume-check" : pendingApproval ? "parent-approval" : eventTask ? "attend" : bedtimeTask ? "complete-bedtime" : "start";
+          const buttonText=isActive ? (task.workflow==="homework" ? "结束作业" : "结束打卡") : needsCheck ? "去检查" : pendingApproval ? "家长确认" : bedtimeTask ? (effectiveDone ? "已完成" : missed ? "已扣 1 分" : !isTaskToday ? (task.date>today ? "当天可做" : "已过日期") : "完成") : !isTaskToday ? (task.date>today ? "当天可做" : "已过日期") : eventTask ? "到课" : "开始";
+          const buttonDisabled=pendingApproval ? Boolean(state.active) : bedtimeTask ? (!isTaskToday || effectiveDone || missed || Boolean(state.active)) : locked || (!isActive && !needsCheck && task.done);
+          const stateText=isActive ? "进行中" : needsCheck ? "待检查" : pendingApproval ? "待确认积分" : missed ? "未完成 -1" : effectiveDone ? "已完成" : !isTaskToday ? (task.date>today ? "已安排" : "未完成") : "待开始";
+          const stateClass=isActive ? "active" : needsCheck || pendingApproval || missed ? "warning" : effectiveDone ? "done" : "";
           const activeStartedText=isActive ? `<span>·</span><span class="task-active-time">${clockText(state.active.startedAt)} 开始打卡</span>` : "";
-          const approvalText=approvalState==="pending" ? `<span>·</span><span class="task-status-warning">待家长确认 +${baseSessionPoints(pendingApproval)} 分</span>` : approvalState==="rejected" ? `<span>·</span><span class="task-status-rejected">家长决定不计分</span>` : approvalState==="approved" ? `<span>·</span><span class="task-status-approved">家长已确认 +${sessionPoints(latestScored)} 分</span>` : "";
+          const approvalText=approvalState==="pending" ? `<span>·</span><span class="task-status-warning">待家长确认 +${baseSessionPoints(pendingApproval)} 分</span>` : approvalState==="rejected" ? `<span>·</span><span class="task-status-rejected">${bedtimeTask?'家长确认未完成 -1 分':'家长决定不计分'}</span>` : approvalState==="approved" ? `<span>·</span><span class="task-status-approved">家长已确认 +${sessionPoints(latestScored)} 分</span>` : missed ? `<span>·</span><span class="task-status-rejected">过期未完成，自动扣 1 分</span>` : "";
+          const bedtimeScoreText=bedtimeTask ? `<span>·</span><span class="task-minimum">完成 +1 / 未完成 -1</span>` : "";
           return `<article class="task-row ${effectiveDone?'done':''} ${needsCheck?'needs-check':''} ${isActive?'active':''}" data-task-id="${task.id}" style="--subject-color:${COLORS[task.subject]||COLORS.其他}">
-            <label class="task-check-hit"><input class="task-check" type="checkbox" aria-label="完成 ${escapeHtml(task.title)}" ${effectiveDone?'checked':''} ${isActive||!isTaskToday||Boolean(pendingApproval)?'disabled':''}></label>
-            <div class="task-main"><div class="task-title-row"><div class="task-title">${escapeHtml(task.title)}</div><span class="task-state ${stateClass}">${stateText}</span></div><div class="task-meta"><span class="subject-dot"></span><span class="subject-label">${escapeHtml(task.subject)}</span>${task.plannedTime?`<span>·</span><span>计划 ${escapeHtml(task.plannedTime)}</span>`:""}${activeStartedText}${task.minimumTarget?`<span>·</span><span class="task-minimum">下限 ${escapeHtml(task.minimumTarget)}</span>`:""}<span>·</span><span>建议 ${task.estimateMinutes} 分钟</span>${studied?`<span>· 已学习 ${secondsText(studied)}</span>`:''}${needsCheck?`<span>·</span><span class="task-status-warning">未完成检查</span>`:""}${approvalText}</div><div class="task-progress"><span style="width:${progress}%"></span></div></div>
-            <div class="task-actions"><button class="start-button ${isActive?'stop':''} ${needsCheck?'warning':''}" type="button" data-action="${buttonAction}" ${buttonDisabled?'disabled':''}>${buttonText}</button><button class="icon-button" type="button" data-action="delete" title="删除计划" aria-label="删除 ${escapeHtml(task.title)}" ${isActive?'disabled':''}>${svgTrash}</button></div>
+            <label class="task-check-hit"><input class="task-check" type="checkbox" aria-label="完成 ${escapeHtml(task.title)}" ${effectiveDone?'checked':''} ${isActive||!isTaskToday||Boolean(pendingApproval)||bedtimeTask?'disabled':''}></label>
+            <div class="task-main"><div class="task-title-row"><div class="task-title">${escapeHtml(task.title)}</div><span class="task-state ${stateClass}">${stateText}</span></div><div class="task-meta"><span class="subject-dot"></span><span class="subject-label">${escapeHtml(task.subject)}</span>${task.plannedTime?`<span>·</span><span>计划 ${escapeHtml(task.plannedTime)}</span>`:""}${activeStartedText}${task.minimumTarget?`<span>·</span><span class="task-minimum">下限 ${escapeHtml(task.minimumTarget)}</span>`:""}${bedtimeScoreText}${bedtimeTask?'':`<span>·</span><span>建议 ${task.estimateMinutes} 分钟</span>`}${studied&&!bedtimeTask?`<span>· 已学习 ${secondsText(studied)}</span>`:''}${needsCheck?`<span>·</span><span class="task-status-warning">未完成检查</span>`:""}${approvalText}</div><div class="task-progress"><span style="width:${progress}%"></span></div></div>
+            <div class="task-actions"><button class="start-button ${isActive?'stop':''} ${needsCheck?'warning':''}" type="button" data-action="${buttonAction}" ${buttonDisabled?'disabled':''}>${buttonText}</button><button class="icon-button" type="button" data-action="delete" title="删除计划" aria-label="删除 ${escapeHtml(task.title)}" ${isActive||bedtimeTask?'disabled':''}>${svgTrash}</button></div>
           </article>`;
         }).join("");
       }
@@ -1943,8 +2006,14 @@
       $("taskList").addEventListener("click", e=>{
         const button=e.target.closest("button[data-action]"), row=e.target.closest("[data-task-id]"); if(!button||!row) return;
         const task=state.tasks.find(t=>t.id===row.dataset.taskId); if(!task) return;
-        if(["start","resume-check","attend"].includes(button.dataset.action) && !canWorkOnTask(task)) { toast("只能在计划当天操作任务"); return; }
+        if(["start","resume-check","attend","complete-bedtime"].includes(button.dataset.action) && !canWorkOnTask(task)) { toast("只能在计划当天操作任务"); return; }
         if(button.dataset.action==="start" && !state.active){ task.workflow==="homework" ? openHomeworkStart(task) : startTask(task); }
+        if(button.dataset.action==="complete-bedtime" && task.kind==="bedtime" && !state.active && !task.done){
+          const endedAt=Date.now();
+          state.sessions.push({ id:uid("session"), taskId:task.id, taskTitle:task.title, subject:task.subject, routineKey:task.routineKey, workflow:"standard", startedAt:endedAt-60000, endedAt, durationSeconds:60, summary:"", completion:"met", correctedErrors:false, pointsApproval:"pending" });
+          task.done=true;
+          save(); render(); toast("已记录完成，等待家长确认 +1 分");
+        }
         if(button.dataset.action==="stop" && state.active?.taskId===task.id) finishActiveTask();
         if(button.dataset.action==="resume-check" && !state.active){
           const session=[...state.sessions].filter(item=>item.taskId===task.id && item.workflow==="homework" && homeworkCheckState(item)==="unchecked").sort((a,b)=>b.endedAt-a.endedAt)[0];
@@ -1992,21 +2061,23 @@
         const button=e.target.closest("button[data-action='undo-redemption']"), row=e.target.closest("[data-redemption-id]"); if(!button||!row) return;
         state.redemptions=state.redemptions.filter(item=>item.id!==row.dataset.redemptionId); save(); renderPoints(); toast("兑换已撤销");
       });
-      $("openParentManager").addEventListener("click",()=>openParentOverlay("deduction"));
+      $("openParentManager").addEventListener("click",()=>openParentOverlay("manage"));
       $("closeParentOverlay").addEventListener("click",closeParentOverlay);
+      $("parentAdjustmentType").addEventListener("change",syncParentAdjustmentFields);
       $("parentApprovalActions").addEventListener("click",e=>{
         const button=e.target.closest("[data-parent-decision]");
         if(button) decideSessionPoints(button.dataset.parentDecision);
       });
       $("parentForm").addEventListener("submit",e=>{
         e.preventDefault();
-        if(parentMode!=="deduction" || !parentPinIsValid()) return;
-        const amount=Math.round(Number($("parentDeductionAmount").value));
+        if(parentMode!=="manage" || !parentPinIsValid()) return;
+        const type=$("parentForm").querySelector('input[name="adjustmentType"]:checked')?.value || "bonus";
+        const amount=Math.round(Number($("parentAdjustmentAmount").value));
         const balance=pointTotals().balance;
-        if(!Number.isFinite(amount) || amount<1) { toast("请输入正确的减分数"); return; }
-        if(amount>balance) { toast(`当前只有 ${balance} 可用积分，不能扣成负数`); return; }
-        state.pointAdjustments.push({ id:uid("deduct"), amount, reason:$("parentDeductionReason").value, createdAt:Date.now() });
-        save(); closeParentOverlay(); render(); toast(`家长已减 ${amount} 分`);
+        if(!Number.isFinite(amount) || amount<1) { toast(`请输入正确的${type==="bonus"?"加":"减"}分数`); return; }
+        if(type==="deduction" && amount>balance) { toast(`当前只有 ${balance} 可用积分，不能扣成负数`); return; }
+        state.pointAdjustments.push({ id:uid(type==="bonus"?"bonus":"deduct"), type, amount, reason:$("parentAdjustmentReason").value, source:"parent", createdAt:Date.now() });
+        save(); closeParentOverlay(); render(); toast(`家长已${type==="bonus"?"加":"减"} ${amount} 分`);
       });
       $("weeklyReviewForm").addEventListener("submit", e=>e.preventDefault());
       $("weeklyReward").addEventListener("input", e=>{
@@ -2033,7 +2104,7 @@
       $("todayButton").addEventListener("click",()=>{ state.selectedDate=dateKey(); save(); render(); });
 
       $("exportButton").addEventListener("click",()=>{
-        const blob=new Blob([JSON.stringify({ version:6, exportedAt:new Date().toISOString(), data:state },null,2)],{type:"application/json"});
+        const blob=new Blob([JSON.stringify({ version:7, exportedAt:new Date().toISOString(), data:state },null,2)],{type:"application/json"});
         const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`知时学习数据-${dateKey()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast("数据已导出");
       });
       $("importButton").addEventListener("click",()=>$("importFile").click());
