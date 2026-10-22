@@ -246,6 +246,9 @@
       background: var(--surface);
     }
     .task-form > *, .catalog-form > *, .reward-item > *, .session-row > *, .schedule-item > * { min-width: 0; }
+    .task-heading-actions { display: flex; align-items: center; gap: 9px; }
+    .task-manager-button { min-height: 36px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface); color: var(--green-dark); padding: 0 11px; font-size: 12px; font-weight: 720; cursor: pointer; }
+    .task-manager-button:hover { border-color: var(--green); background: var(--green-soft); }
     input, select {
       width: 100%;
       height: 48px;
@@ -624,7 +627,45 @@
     .parent-deduction-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; }
     .parent-deduction-row strong { color: var(--red); white-space: nowrap; }
     .parent-deduction-row strong.positive { color: var(--green-dark); }
-    #parentAdjustmentFields[hidden], #parentApprovalActions[hidden], #parentPinConfirmWrap[hidden], #parentAdjustmentHistory[hidden] { display: none; }
+    #parentAdjustmentFields[hidden], #parentApprovalActions[hidden], #parentPinConfirmWrap[hidden], #parentAdjustmentHistory[hidden], #taskManagerBody[hidden], #taskManagerAddPanel[hidden], #taskManagerDeletePanel[hidden], #taskManagerUnlockForm[hidden] { display: none; }
+    .task-manager-dialog { width: min(680px,100%); }
+    .task-manager-unlock { display: grid; gap: 12px; }
+    .task-manager-body { display: grid; gap: 16px; }
+    .task-manager-tabs { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); border: 1px solid var(--line-strong); border-radius: 6px; overflow: hidden; }
+    .task-manager-tabs button { min-height: 44px; border: 0; background: var(--surface); color: var(--muted); font-weight: 720; cursor: pointer; }
+    .task-manager-tabs button + button { border-left: 1px solid var(--line); }
+    .task-manager-tabs button.active { background: var(--green-soft); color: var(--green-dark); }
+    .task-manager-panel { display: grid; gap: 14px; }
+    .task-manager-fields { display: grid; grid-template-columns: minmax(150px,1fr) minmax(160px,1.2fr) 110px; gap: 9px; }
+    .task-manager-custom { grid-column: 1 / -1; }
+    .manager-week { display: grid; gap: 8px; }
+    .manager-week-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .manager-week-title { color: var(--ink); font-size: 13px; font-weight: 740; }
+    .manager-week-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .manager-link-button { border: 0; background: transparent; color: var(--green-dark); padding: 3px 0; font-size: 11px; font-weight: 720; cursor: pointer; }
+    .manager-link-button + .manager-link-button { margin-left: 7px; }
+    .manager-date-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 6px; }
+    .manager-date { position: relative; min-width: 0; }
+    .manager-date input { position: absolute; opacity: 0; pointer-events: none; }
+    .manager-date span { min-height: 52px; display: grid; place-items: center; align-content: center; gap: 2px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--muted); font-size: 10px; cursor: pointer; }
+    .manager-date strong { color: var(--ink); font-size: 14px; }
+    .manager-date input:checked + span { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
+    .manager-date input:checked + span strong { color: var(--green-dark); }
+    .manager-date.today span { box-shadow: inset 0 0 0 2px var(--gold); }
+    .manager-selection-note { color: var(--muted); font-size: 11px; line-height: 18px; }
+    .manager-delete-toolbar { display: flex; align-items: center; gap: 10px; }
+    .manager-delete-toolbar select { flex: 1; }
+    .manager-task-list { max-height: 310px; overflow: auto; display: grid; border: 1px solid var(--line); border-radius: 6px; }
+    .manager-task-option { min-height: 48px; display: grid; grid-template-columns: 22px minmax(0,1fr) auto; gap: 9px; align-items: center; padding: 8px 11px; border-bottom: 1px solid var(--line); font-size: 12px; cursor: pointer; }
+    .manager-task-option:last-child { border-bottom: 0; }
+    .manager-task-option input { width: 18px; height: 18px; margin: 0; accent-color: var(--green); }
+    .manager-task-option span { min-width: 0; color: var(--ink); overflow-wrap: anywhere; }
+    .manager-task-option small { color: var(--muted); white-space: nowrap; }
+    .manager-task-option.locked { cursor: default; background: var(--surface-soft); }
+    .manager-task-option.locked span, .manager-task-option.locked small { color: var(--faint); }
+    .danger-button { min-height: 44px; border: 1px solid var(--red); border-radius: 6px; background: var(--red); color: #fff; padding: 0 15px; font-weight: 720; cursor: pointer; }
+    .danger-button:disabled { opacity: .4; cursor: default; }
+    .manager-empty { padding: 28px 14px; color: var(--muted); text-align: center; font-size: 12px; }
     .celebration {
       position: fixed;
       inset: 0;
@@ -752,6 +793,11 @@
       .review-actions button { width: 100%; min-height: 48px; }
       .decision-actions { grid-template-columns: 1fr; }
       .parent-pin-row, .parent-decision-actions { grid-template-columns: 1fr; }
+      .task-manager-fields { grid-template-columns: 1fr; }
+      .task-manager-custom { grid-column: auto; }
+      .manager-date-grid { gap: 4px; }
+      .manager-date span { min-height: 48px; }
+      .manager-delete-toolbar { align-items: stretch; flex-direction: column; }
       .weekly-head { align-items: start; flex-direction: column; gap: 4px; }
       .weekly-metrics { grid-template-columns: 1fr; }
       .weekly-metric { display: flex; align-items: baseline; justify-content: space-between; text-align: left; padding: 11px 14px; }
@@ -856,7 +902,7 @@
 
     <section class="workspace">
       <div>
-        <div class="section-head"><h2>计划清单</h2><span class="count" id="taskCount">0 项</span></div>
+        <div class="section-head"><h2>计划清单</h2><div class="task-heading-actions"><span class="count" id="taskCount">0 项</span><button class="task-manager-button" id="openTaskManager" type="button">家长批量管理</button></div></div>
         <form class="task-form" id="taskForm">
           <select id="taskPreset" aria-label="计划任务">
             <optgroup label="每日学习环节">
@@ -949,8 +995,9 @@
         </div>
         <div class="reward-shop">
           <div class="reward-shop-head"><h2>奖励商店</h2><span class="count" id="rewardCount">0 项</span></div>
+          <div class="manager-selection-note" style="margin-bottom:8px">家长可自由设置奖励内容和所需积分，添加时需要家长口令。</div>
           <form class="catalog-form" id="rewardForm">
-            <input id="rewardName" maxlength="80" autocomplete="off" placeholder="添加一个想要的奖励" aria-label="奖励名称" required>
+            <input id="rewardName" maxlength="80" autocomplete="off" placeholder="家长添加自定义奖励" aria-label="奖励名称" required>
             <input id="rewardCost" type="number" min="1" max="9999" step="1" value="50" aria-label="所需积分" required>
             <button class="primary-button" type="submit" aria-label="添加奖励" title="添加奖励">添加</button>
           </form>
@@ -1145,6 +1192,85 @@
     </section>
   </div>
 
+  <div class="review-overlay" id="taskManagerOverlay" hidden>
+    <section class="review-dialog task-manager-dialog" role="dialog" aria-modal="true" aria-labelledby="taskManagerTitle">
+      <div class="review-head">
+        <div class="review-kicker">家长操作</div>
+        <h2 id="taskManagerTitle">管理每日任务</h2>
+      </div>
+      <div class="review-body">
+        <form class="task-manager-unlock" id="taskManagerUnlockForm">
+          <div class="parent-context"><strong>批量安排更省事</strong><br>可以一次添加到多个日期，也可以勾选多项统一删除。</div>
+          <div class="field-group">
+            <label class="field-label" for="taskManagerPin">4 位家长口令</label>
+            <div class="parent-pin-row" id="taskManagerPinRow">
+              <input class="parent-form-input" id="taskManagerPin" type="password" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{4}" placeholder="输入 4 位数字" required>
+              <div id="taskManagerPinConfirmWrap" hidden>
+                <label class="sr-only" for="taskManagerPinConfirm">再次输入家长口令</label>
+                <input class="parent-form-input" id="taskManagerPinConfirm" type="password" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{4}" placeholder="再次输入口令">
+              </div>
+            </div>
+            <p class="parent-help" id="taskManagerPinHelp">口令仅保存在这台设备上，用于防止误操作。</p>
+          </div>
+          <div class="review-actions">
+            <button class="secondary-button" data-close-task-manager type="button">取消</button>
+            <button class="primary-button" type="submit">进入管理</button>
+          </div>
+        </form>
+
+        <div class="task-manager-body" id="taskManagerBody" hidden>
+          <div class="task-manager-tabs" role="tablist" aria-label="任务管理方式">
+            <button class="active" type="button" role="tab" aria-selected="true" data-manager-tab="add">批量添加</button>
+            <button type="button" role="tab" aria-selected="false" data-manager-tab="delete">批量删除</button>
+          </div>
+
+          <form class="task-manager-panel" id="taskManagerAddPanel">
+            <div class="task-manager-fields">
+              <select class="parent-form-input" id="managerTaskPreset" aria-label="任务类型">
+                <optgroup label="每日学习环节">
+                  <option value="schoolHomework">学校作业</option><option value="tutoringHomework">辅导班作业</option><option value="preview">课前预习</option><option value="review">课后复习</option>
+                </optgroup>
+                <optgroup label="专项练习">
+                  <option value="math">数学练习</option><option value="chinese">语文背诵</option><option value="english">英语单词</option><option value="science">科学复习</option><option value="reading">课外阅读</option><option value="chess">象棋</option><option value="other">其他</option>
+                </optgroup>
+                <optgroup label="周末与家长任务">
+                  <option value="reviewPaper">周末复习卷</option><option value="chineseDictation">语文听写</option><option value="englishDictation">英语听写</option><option value="weeklySummary">一周口头总结</option>
+                </optgroup>
+                <optgroup label="家庭任务">
+                  <option value="choreLaundry">洗衣服</option><option value="choreTable">饭后整理桌面</option><option value="choreCooking">煮饭烧菜</option>
+                </optgroup>
+              </select>
+              <input class="parent-form-input" id="managerTaskMinimum" maxlength="60" autocomplete="off" placeholder="最低完成量" aria-label="最低完成量">
+              <select class="parent-form-input" id="managerTaskEstimate" aria-label="预计时长">
+                <option value="10">10 分钟</option><option value="15">15 分钟</option><option value="25">25 分钟</option><option value="30">30 分钟</option><option value="45">45 分钟</option><option value="60">60 分钟</option><option value="90">90 分钟</option>
+              </select>
+              <input class="parent-form-input task-manager-custom" id="managerTaskTitle" maxlength="80" autocomplete="off" placeholder="输入具体任务名称" aria-label="具体任务" hidden>
+            </div>
+            <div id="managerDatePicker"></div>
+            <div class="manager-selection-note" id="managerDateSelection">请选择至少 1 天</div>
+            <div class="review-actions">
+              <button class="secondary-button" data-close-task-manager type="button">关闭</button>
+              <button class="primary-button" id="addBatchTasks" type="submit">添加到所选日期</button>
+            </div>
+          </form>
+
+          <section class="task-manager-panel" id="taskManagerDeletePanel" hidden>
+            <div class="manager-delete-toolbar">
+              <select class="parent-form-input" id="managerDeleteWeek" aria-label="选择一周"></select>
+              <button class="secondary-button" id="selectAllManagerTasks" type="button">全选可删除项</button>
+            </div>
+            <div class="manager-task-list" id="managerDeleteList"></div>
+            <div class="manager-selection-note" id="managerDeleteSelection">请选择要删除的任务</div>
+            <div class="review-actions">
+              <button class="secondary-button" data-close-task-manager type="button">关闭</button>
+              <button class="danger-button" id="deleteBatchTasks" type="button" disabled>删除已选任务</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <div class="celebration" id="celebration" role="status" aria-live="assertive" hidden>
     <div class="celebration-card">
       <span class="celebration-piece" aria-hidden="true"></span><span class="celebration-piece" aria-hidden="true"></span><span class="celebration-piece" aria-hidden="true"></span><span class="celebration-piece" aria-hidden="true"></span>
@@ -1173,12 +1299,13 @@
       ];
       const TITLE_WORKFLOW = { "完成作业":"homework", "学校作业":"homework", "辅导班作业":"homework", "周末复习卷":"homework", "课前预习":"preview", "课后复习":"review" };
       const TITLE_ROUTINE = { "完成作业":"school-homework", "学校作业":"school-homework", "课前预习":"preview", "课后复习":"review", "课外阅读":"reading", "象棋":"chess", "中国象棋":"chess" };
-      const REWARD_CATALOG_VERSION = 3;
+      const REWARD_CATALOG_VERSION = 4;
       const COLORS = { "数学":"#3977a9", "语文":"#b5534a", "英语":"#237452", "科学":"#a87925", "阅读":"#7562a5", "象棋":"#8a5a3b", "学习":"#4c7f8c", "家务":"#a06b30", "其他":"#65706a" };
       const DEFAULT_REWARDS = [
         { id:"reward-family-choice", title:"选择一次家庭游戏或当天菜单", cost:40 },
         { id:"reward-break", title:"自由娱乐 30 分钟", cost:50 },
         { id:"reward-book", title:"买一本喜欢的书", cost:60 },
+        { id:"reward-cash-10", title:"兑换 10 元", cost:100 },
         { id:"reward-shaved-ice", title:"吃沙冰", cost:100 },
         { id:"reward-zhaoyiming", title:"赵一鸣买吃的", cost:150 },
         { id:"reward-weekend-choice", title:"选择一次周末活动或家庭电影", cost:180 },
@@ -1265,11 +1392,12 @@
         }
         return tasks;
       }
-      function ensureStudyPlanTasks(tasks, startDay=dateKey()) {
+      function ensureStudyPlanTasks(tasks, startDay=dateKey(), deletedAutoTaskKeys=[]) {
         const endDay=shiftDate(weekStartKey(startDay),13);
+        const deleted=new Set(deletedAutoTaskKeys);
         for(let day=startDay; day<=endDay; day=shiftDate(day,1)) {
           const existing=new Set(tasks.filter(task=>task.date===day).map(task=>task.routineKey).filter(Boolean));
-          studyPlanTasks(day).forEach(task=>{ if(!existing.has(task.routineKey)) tasks.push(task); });
+          studyPlanTasks(day).forEach(task=>{ if(!existing.has(task.routineKey) && !deleted.has(`${day}|${task.routineKey}`)) tasks.push(task); });
         }
         return endDay;
       }
@@ -1309,7 +1437,7 @@
           active: null,
           pendingReview: null,
           pendingHomeworkCheck: null,
-          preferences: { habitTime: "17:20", chessTaskAdded:true, dailyRoutineEnabled:true, lastRoutineDate:today, rewardCatalogVersion:REWARD_CATALOG_VERSION, planVersion:PLAN_VERSION, planGeneratedThrough, parentPinHash:"" },
+          preferences: { habitTime: "17:20", chessTaskAdded:true, dailyRoutineEnabled:true, lastRoutineDate:today, rewardCatalogVersion:REWARD_CATALOG_VERSION, planVersion:PLAN_VERSION, planGeneratedThrough, parentPinHash:"", deletedAutoTaskKeys:[] },
           weeklyReviews: {},
           rewards: DEFAULT_REWARDS.map(reward=>({...reward})),
           redemptions: [],
@@ -1324,14 +1452,14 @@
           return { ...task, title, routineKey, minimumTarget:task.minimumTarget || "", plannedTime:task.plannedTime || "", kind:task.kind || "study", workflow };
         });
         const today = dateKey();
-        const preferences = { habitTime:data.preferences?.habitTime || "17:20", chessTaskAdded:true, dailyRoutineEnabled:data.preferences?.dailyRoutineEnabled !== false, lastRoutineDate:data.preferences?.lastRoutineDate || "", rewardCatalogVersion:Number(data.preferences?.rewardCatalogVersion || 0), planVersion:Number(data.preferences?.planVersion || 0), planGeneratedThrough:data.preferences?.planGeneratedThrough || "", parentPinHash:data.preferences?.parentPinHash || "" };
+        const preferences = { habitTime:data.preferences?.habitTime || "17:20", chessTaskAdded:true, dailyRoutineEnabled:data.preferences?.dailyRoutineEnabled !== false, lastRoutineDate:data.preferences?.lastRoutineDate || "", rewardCatalogVersion:Number(data.preferences?.rewardCatalogVersion || 0), planVersion:Number(data.preferences?.planVersion || 0), planGeneratedThrough:data.preferences?.planGeneratedThrough || "", parentPinHash:data.preferences?.parentPinHash || "", deletedAutoTaskKeys:Array.isArray(data.preferences?.deletedAutoTaskKeys) ? data.preferences.deletedAutoTaskKeys : [] };
         const rewards = migrateRewards(Array.isArray(data.rewards) ? data.rewards : DEFAULT_REWARDS, preferences);
         const sessions = (data.sessions || []).map(session => {
           const normalized={ ...session, summary: session.summary || "", completion: session.completion || "unreviewed", routineKey:session.routineKey || null, workflow:session.workflow || "standard", homeworkProcess:session.homeworkProcess || null, correctedErrors:Boolean(session.correctedErrors) };
           return normalized.workflow==="homework" ? { ...normalized, homeworkCheckStatus:homeworkCheckState(normalized) } : normalized;
         });
         const pointAdjustments = Array.isArray(data.pointAdjustments) ? data.pointAdjustments.map(item=>({...item,type:item.type || "deduction"})) : [];
-        if(preferences.dailyRoutineEnabled) preferences.planGeneratedThrough=ensureStudyPlanTasks(tasks,today);
+        if(preferences.dailyRoutineEnabled) preferences.planGeneratedThrough=ensureStudyPlanTasks(tasks,today,preferences.deletedAutoTaskKeys);
         settleMissedBedtimeTasks(tasks,sessions,pointAdjustments,today);
         preferences.planVersion=PLAN_VERSION;
         return {
@@ -1361,6 +1489,8 @@
       let homeworkStartTaskId = null;
       let parentMode = "manage";
       let parentTargetSessionId = null;
+      let pendingRewardDraft = null;
+      let taskManagerUnlocked = false;
       function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
       save();
       function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])); }
@@ -1525,9 +1655,11 @@
       }
       function renderParentModal() {
         const isApproval=parentMode==="approval";
+        const isRewardAdd=parentMode==="reward-add";
+        const isAdjustment=parentMode==="manage";
         const hasPin=Boolean(state.preferences.parentPinHash);
-        $("parentTitle").textContent=isApproval ? "确认本次积分" : "家长积分管理";
-        $("parentAdjustmentFields").hidden=isApproval;
+        $("parentTitle").textContent=isApproval ? "确认本次积分" : isRewardAdd ? "添加自定义奖励" : "家长积分管理";
+        $("parentAdjustmentFields").hidden=!isAdjustment;
         $("parentApprovalActions").hidden=!isApproval;
         $("submitParentAdjustment").hidden=isApproval;
         $("parentPinConfirmWrap").hidden=hasPin;
@@ -1543,6 +1675,11 @@
           decisionButtons[0].textContent=bedtime ? "未完成 -1" : "本次不计分";
           decisionButtons[1].textContent=bedtime ? "确认完成 +1" : "确认计分";
           $("parentAdjustmentHistory").hidden=true;
+        } else if(isRewardAdd) {
+          const reward=pendingRewardDraft;
+          $("parentContext").innerHTML=reward ? `确认将 <strong>${escapeHtml(reward.title)}</strong> 加入奖励商店，需要 <strong>${Number(reward.cost)}</strong> 积分兑换。` : "这项奖励已失效，请重新填写。";
+          $("parentAdjustmentHistory").hidden=true;
+          $("submitParentAdjustment").textContent="确认添加奖励";
         } else {
           const totals=pointTotals();
           $("parentContext").innerHTML=`当前可用积分 <strong>${totals.balance}</strong> 分。家长可以奖励额外的好表现；减分只针对事先约定的行为，不因做错题或成绩波动扣分。`;
@@ -1576,6 +1713,7 @@
       function closeParentOverlay() {
         $("parentOverlay").hidden=true;
         parentTargetSessionId=null;
+        pendingRewardDraft=null;
         $("parentForm").reset();
       }
       function decideSessionPoints(decision) {
@@ -1701,8 +1839,172 @@
         if (!custom) $("taskTitle").value = "";
       }
 
+      function syncManagerTaskPreset() {
+        const preset=TASK_PRESETS[$("managerTaskPreset").value] || TASK_PRESETS.other;
+        const custom=$("managerTaskPreset").value==="other";
+        $("managerTaskTitle").hidden=!custom;
+        $("managerTaskTitle").required=custom;
+        $("managerTaskMinimum").value=preset.minimum;
+        $("managerTaskEstimate").value=preset.estimate;
+        if(!custom) $("managerTaskTitle").value="";
+      }
+
+      function managerWeekLabel(start) {
+        const first=dateFromKey(start), last=dateFromKey(shiftDate(start,6));
+        return `${first.getMonth()+1}月${first.getDate()}日 - ${last.getMonth()+1}月${last.getDate()}日`;
+      }
+
+      function renderManagerDatePicker() {
+        const monday=weekStartKey(dateKey());
+        const selected=state.selectedDate>=shiftDate(monday,-7) && state.selectedDate<=shiftDate(monday,13) ? state.selectedDate : dateKey();
+        const weekdays=["一","二","三","四","五","六","日"];
+        const groups=[{label:"上周",offset:-7},{label:"本周",offset:0},{label:"下周",offset:7}];
+        $("managerDatePicker").innerHTML=groups.map(group=>{
+          const start=shiftDate(monday,group.offset);
+          const days=weekdays.map((weekday,index)=>{
+            const day=shiftDate(start,index), date=dateFromKey(day), today=day===dateKey();
+            return `<label class="manager-date ${today?'today':''}"><input type="checkbox" name="managerDate" value="${day}" ${day===selected?'checked':''}><span><b>周${weekday}</b><strong>${date.getDate()}</strong></span></label>`;
+          }).join("");
+          return `<section class="manager-week" data-manager-week-start="${start}"><div class="manager-week-head"><div><div class="manager-week-title">${group.label}</div><div class="manager-selection-note">${managerWeekLabel(start)}</div></div><div class="manager-week-actions"><button class="manager-link-button" type="button" data-date-action="all">全选</button><button class="manager-link-button" type="button" data-date-action="clear">清空</button></div></div><div class="manager-date-grid">${days}</div></section>`;
+        }).join("");
+        updateManagerDateSelection();
+      }
+
+      function updateManagerDateSelection() {
+        const count=$("managerDatePicker").querySelectorAll('input[name="managerDate"]:checked').length;
+        $("managerDateSelection").textContent=count ? `已选择 ${count} 天，将为这些日期添加同一任务` : "请选择至少 1 天";
+        $("addBatchTasks").disabled=!count;
+      }
+
+      function renderManagerDeleteWeeks() {
+        const monday=weekStartKey(dateKey());
+        const groups=[{label:"上周",offset:-7},{label:"本周",offset:0},{label:"下周",offset:7}];
+        $("managerDeleteWeek").innerHTML=groups.map(group=>{ const start=shiftDate(monday,group.offset); return `<option value="${start}" ${state.selectedDate>=start&&state.selectedDate<=shiftDate(start,6)?'selected':''}>${group.label} · ${managerWeekLabel(start)}</option>`; }).join("");
+        renderManagerDeleteList();
+      }
+
+      function managerTaskCanDelete(task) {
+        if(state.active?.taskId===task.id) return false;
+        return !state.sessions.some(session=>session.taskId===task.id)
+          && state.pendingReview?.taskId!==task.id
+          && state.pendingHomeworkCheck?.taskId!==task.id
+          && !state.pointAdjustments.some(item=>item.sourceTaskId===task.id);
+      }
+
+      function renderManagerDeleteList() {
+        const start=$("managerDeleteWeek").value || weekStartKey(dateKey()), end=shiftDate(start,6);
+        const weekdays=["日","一","二","三","四","五","六"];
+        const tasks=state.tasks.filter(task=>task.date>=start&&task.date<=end).sort((a,b)=>a.date.localeCompare(b.date) || (ROUTINE_PRIORITY[a.routineKey]??WORKFLOW_PRIORITY[a.workflow]??9)-(ROUTINE_PRIORITY[b.routineKey]??WORKFLOW_PRIORITY[b.workflow]??9));
+        $("managerDeleteList").innerHTML=tasks.length ? tasks.map(task=>{
+          const date=dateFromKey(task.date), removable=managerTaskCanDelete(task);
+          return `<label class="manager-task-option ${removable?'':'locked'}"><input type="checkbox" name="managerDeleteTask" value="${task.id}" ${removable?'':'disabled'}><span>${escapeHtml(task.title)}</span><small>${date.getMonth()+1}/${date.getDate()} 周${weekdays[date.getDay()]}${removable?'':' · 有记录'}</small></label>`;
+        }).join("") : '<div class="manager-empty">这一周没有任务</div>';
+        updateManagerDeleteSelection();
+      }
+
+      function updateManagerDeleteSelection() {
+        const count=$("managerDeleteList").querySelectorAll('input[name="managerDeleteTask"]:checked').length;
+        $("managerDeleteSelection").textContent=count ? `已选择 ${count} 项任务` : "请选择要删除的任务；已有打卡记录的任务会保留";
+        $("deleteBatchTasks").disabled=!count;
+        $("deleteBatchTasks").dataset.armed="";
+        $("deleteBatchTasks").textContent="删除已选任务";
+      }
+
+      function switchTaskManagerTab(tab) {
+        const deleting=tab==="delete";
+        $("taskManagerAddPanel").hidden=deleting;
+        $("taskManagerDeletePanel").hidden=!deleting;
+        $("taskManagerBody").querySelectorAll("[data-manager-tab]").forEach(button=>{
+          const active=button.dataset.managerTab===tab;
+          button.classList.toggle("active",active);
+          button.setAttribute("aria-selected",active?"true":"false");
+        });
+        if(deleting) renderManagerDeleteList();
+      }
+
+      function openTaskManager() {
+        taskManagerUnlocked=false;
+        $("taskManagerUnlockForm").reset();
+        $("taskManagerBody").hidden=true;
+        $("taskManagerUnlockForm").hidden=false;
+        const hasPin=Boolean(state.preferences.parentPinHash);
+        $("taskManagerPinConfirmWrap").hidden=hasPin;
+        $("taskManagerPinRow").classList.toggle("single",hasPin);
+        $("taskManagerPinConfirm").required=!hasPin;
+        $("taskManagerPinHelp").textContent=hasPin ? "请输入家长口令后操作。" : "首次使用，请设置并确认 4 位数字口令。";
+        renderManagerDatePicker();
+        renderManagerDeleteWeeks();
+        syncManagerTaskPreset();
+        switchTaskManagerTab("add");
+        $("taskManagerOverlay").hidden=false;
+        setTimeout(()=>$("taskManagerPin").focus(),0);
+      }
+
+      function closeTaskManager() {
+        taskManagerUnlocked=false;
+        $("taskManagerOverlay").hidden=true;
+        $("taskManagerUnlockForm").reset();
+      }
+
+      function unlockTaskManager() {
+        const pin=$("taskManagerPin").value.trim();
+        if(!/^\d{4}$/.test(pin)) { toast("请输入 4 位数字口令"); $("taskManagerPin").focus(); return; }
+        if(!state.preferences.parentPinHash) {
+          if(pin!==$("taskManagerPinConfirm").value.trim()) { toast("两次输入的口令不一致"); $("taskManagerPinConfirm").focus(); return; }
+          state.preferences.parentPinHash=hashPin(pin);
+          save();
+        } else if(hashPin(pin)!==state.preferences.parentPinHash) {
+          toast("家长口令不正确"); $("taskManagerPin").select(); return;
+        }
+        taskManagerUnlocked=true;
+        $("taskManagerUnlockForm").hidden=true;
+        $("taskManagerBody").hidden=false;
+        setTimeout(()=>$("managerTaskPreset").focus(),0);
+      }
+
+      function addManagerTasks() {
+        if(!taskManagerUnlocked) return;
+        const presetKey=$("managerTaskPreset").value, preset=TASK_PRESETS[presetKey] || TASK_PRESETS.other;
+        const title=presetKey==="other" ? $("managerTaskTitle").value.trim() : preset.title;
+        const dates=[...$("managerDatePicker").querySelectorAll('input[name="managerDate"]:checked')].map(input=>input.value);
+        if(!title) { toast("请输入任务名称"); $("managerTaskTitle").focus(); return; }
+        if(!dates.length) { toast("请至少选择 1 天"); return; }
+        let added=0, skipped=0;
+        dates.forEach(day=>{
+          const duplicate=state.tasks.some(task=>task.date===day && (preset.routineKey ? task.routineKey===preset.routineKey : task.title===title));
+          if(duplicate) { skipped++; return; }
+          state.tasks.push({ id:uid("task"), date:day, title, minimumTarget:$("managerTaskMinimum").value.trim(), subject:preset.subject, estimateMinutes:Number($("managerTaskEstimate").value), routineKey:preset.routineKey||null, workflow:preset.workflow||"standard", kind:preset.kind||"study", done:false, addedByParent:true });
+          if(preset.routineKey) state.preferences.deletedAutoTaskKeys=state.preferences.deletedAutoTaskKeys.filter(key=>key!==`${day}|${preset.routineKey}`);
+          added++;
+        });
+        save(); render(); renderManagerDeleteList();
+        toast(skipped ? `已添加 ${added} 项，跳过 ${skipped} 个重复日期` : `已批量添加 ${added} 项任务`);
+      }
+
+      function deleteManagerTasks() {
+        if(!taskManagerUnlocked) return;
+        const ids=[...$("managerDeleteList").querySelectorAll('input[name="managerDeleteTask"]:checked')].map(input=>input.value);
+        if(!ids.length) return;
+        if($("deleteBatchTasks").dataset.armed!=="true") {
+          $("deleteBatchTasks").dataset.armed="true";
+          $("deleteBatchTasks").textContent=`确认删除 ${ids.length} 项`;
+          toast("请再点一次确认删除");
+          return;
+        }
+        const idSet=new Set(ids), removing=state.tasks.filter(task=>idSet.has(task.id) && managerTaskCanDelete(task));
+        removing.forEach(task=>{
+          if(task.autoPlanned && task.routineKey) {
+            const key=`${task.date}|${task.routineKey}`;
+            if(!state.preferences.deletedAutoTaskKeys.includes(key)) state.preferences.deletedAutoTaskKeys.push(key);
+          }
+        });
+        state.tasks=state.tasks.filter(task=>!removing.some(item=>item.id===task.id));
+        save(); render(); renderManagerDeleteList();
+        toast(`已删除 ${removing.length} 项任务`);
+      }
+
       function ensureStudyPlanWindow() {
-        state.preferences.planGeneratedThrough=ensureStudyPlanTasks(state.tasks,dateKey());
+        state.preferences.planGeneratedThrough=ensureStudyPlanTasks(state.tasks,dateKey(),state.preferences.deletedAutoTaskKeys);
         state.preferences.planVersion=PLAN_VERSION;
       }
 
@@ -1860,7 +2162,7 @@
           return `<article class="task-row ${effectiveDone?'done':''} ${needsCheck?'needs-check':''} ${isActive?'active':''}" data-task-id="${task.id}" style="--subject-color:${COLORS[task.subject]||COLORS.其他}">
             <label class="task-check-hit"><input class="task-check" type="checkbox" aria-label="完成 ${escapeHtml(task.title)}" ${effectiveDone?'checked':''} ${isActive||!isTaskToday||Boolean(pendingApproval)||bedtimeTask?'disabled':''}></label>
             <div class="task-main"><div class="task-title-row"><div class="task-title">${escapeHtml(task.title)}</div><span class="task-state ${stateClass}">${stateText}</span></div><div class="task-meta"><span class="subject-dot"></span><span class="subject-label">${escapeHtml(task.subject)}</span>${task.plannedTime?`<span>·</span><span>计划 ${escapeHtml(task.plannedTime)}</span>`:""}${activeStartedText}${task.minimumTarget?`<span>·</span><span class="task-minimum">下限 ${escapeHtml(task.minimumTarget)}</span>`:""}${bedtimeScoreText}${bedtimeTask?'':`<span>·</span><span>建议 ${task.estimateMinutes} 分钟</span>`}${studied&&!bedtimeTask?`<span>· 已学习 ${secondsText(studied)}</span>`:''}${needsCheck?`<span>·</span><span class="task-status-warning">未完成检查</span>`:""}${approvalText}</div><div class="task-progress"><span style="width:${progress}%"></span></div></div>
-            <div class="task-actions"><button class="start-button ${isActive?'stop':''} ${needsCheck?'warning':''}" type="button" data-action="${buttonAction}" ${buttonDisabled?'disabled':''}>${buttonText}</button><button class="icon-button" type="button" data-action="delete" title="删除计划" aria-label="删除 ${escapeHtml(task.title)}" ${isActive||bedtimeTask?'disabled':''}>${svgTrash}</button></div>
+            <div class="task-actions"><button class="start-button ${isActive?'stop':''} ${needsCheck?'warning':''}" type="button" data-action="${buttonAction}" ${buttonDisabled?'disabled':''}>${buttonText}</button><button class="icon-button" type="button" data-action="delete" title="删除计划" aria-label="删除 ${escapeHtml(task.title)}" ${!managerTaskCanDelete(task)||bedtimeTask?'disabled':''}>${svgTrash}</button></div>
           </article>`;
         }).join("");
       }
@@ -1957,6 +2259,32 @@
         save(); render(); (presetKey==="other" ? $("taskTitle") : $("taskPreset")).focus();
       });
       $("taskPreset").addEventListener("change",()=>{ syncTaskPreset(); if($("taskPreset").value==="other") $("taskTitle").focus(); });
+      $("openTaskManager").addEventListener("click",openTaskManager);
+      $("taskManagerUnlockForm").addEventListener("submit",e=>{ e.preventDefault(); unlockTaskManager(); });
+      $("taskManagerOverlay").addEventListener("click",e=>{ if(e.target.matches("[data-close-task-manager]")) closeTaskManager(); });
+      $("taskManagerBody").addEventListener("click",e=>{
+        const tab=e.target.closest("[data-manager-tab]");
+        if(tab) switchTaskManagerTab(tab.dataset.managerTab);
+      });
+      $("managerTaskPreset").addEventListener("change",()=>{ syncManagerTaskPreset(); if($("managerTaskPreset").value==="other") $("managerTaskTitle").focus(); });
+      $("managerDatePicker").addEventListener("change",updateManagerDateSelection);
+      $("managerDatePicker").addEventListener("click",e=>{
+        const button=e.target.closest("[data-date-action]"); if(!button) return;
+        const week=button.closest("[data-manager-week-start]");
+        week.querySelectorAll('input[name="managerDate"]').forEach(input=>{ input.checked=button.dataset.dateAction==="all"; });
+        updateManagerDateSelection();
+      });
+      $("taskManagerAddPanel").addEventListener("submit",e=>{ e.preventDefault(); addManagerTasks(); });
+      $("managerDeleteWeek").addEventListener("change",renderManagerDeleteList);
+      $("managerDeleteList").addEventListener("change",updateManagerDeleteSelection);
+      $("selectAllManagerTasks").addEventListener("click",()=>{
+        const inputs=[...$("managerDeleteList").querySelectorAll('input[name="managerDeleteTask"]:not(:disabled)')];
+        const shouldSelect=inputs.some(input=>!input.checked);
+        inputs.forEach(input=>{ input.checked=shouldSelect; });
+        $("selectAllManagerTasks").textContent=shouldSelect ? "取消全选" : "全选可删除项";
+        updateManagerDeleteSelection();
+      });
+      $("deleteBatchTasks").addEventListener("click",deleteManagerTasks);
       $("homeworkStartForm").addEventListener("change", updateHomeworkStartState);
       $("homeworkStartForm").addEventListener("submit", e=>{
         e.preventDefault();
@@ -2024,7 +2352,13 @@
           if(session) openParentOverlay("approval",session.id);
         }
         if(button.dataset.action==="attend" && task.kind==="event" && !state.active){ task.done=true; save(); render(); toast("课程到课已记录"); }
-        if(button.dataset.action==="delete" && state.active?.taskId!==task.id){ state.tasks=state.tasks.filter(t=>t.id!==task.id); save(); render(); }
+        if(button.dataset.action==="delete" && managerTaskCanDelete(task)){
+          if(task.autoPlanned && task.routineKey) {
+            const key=`${task.date}|${task.routineKey}`;
+            if(!state.preferences.deletedAutoTaskKeys.includes(key)) state.preferences.deletedAutoTaskKeys.push(key);
+          }
+          state.tasks=state.tasks.filter(t=>t.id!==task.id); save(); render();
+        }
       });
       $("sessionList").addEventListener("click", e=>{
         const button=e.target.closest("button[data-action]"), row=e.target.closest("[data-session-id]"); if(!button||!row) return;
@@ -2043,8 +2377,8 @@
         e.preventDefault();
         const title=$("rewardName").value.trim(), cost=Math.round(Number($("rewardCost").value));
         if(!title || !Number.isFinite(cost) || cost<1) return;
-        state.rewards.push({ id:uid("reward"), title, cost });
-        $("rewardName").value=""; save(); renderPoints(); toast("奖励已添加"); $("rewardName").focus();
+        pendingRewardDraft={ title, cost };
+        openParentOverlay("reward-add");
       });
       $("rewardCatalog").addEventListener("click", e=>{
         const button=e.target.closest("button[data-action]"), item=e.target.closest("[data-reward-id]"); if(!button||!item) return;
@@ -2070,7 +2404,19 @@
       });
       $("parentForm").addEventListener("submit",e=>{
         e.preventDefault();
-        if(parentMode!=="manage" || !parentPinIsValid()) return;
+        if(!parentPinIsValid()) return;
+        if(parentMode==="reward-add") {
+          const reward=pendingRewardDraft;
+          if(!reward) { closeParentOverlay(); toast("请重新填写奖励"); return; }
+          state.rewards.push({ id:uid("reward"), title:reward.title, cost:reward.cost, addedByParent:true });
+          save(); closeParentOverlay(); renderPoints();
+          $("rewardName").value="";
+          $("rewardCost").value="50";
+          toast("家长已添加奖励");
+          $("rewardName").focus();
+          return;
+        }
+        if(parentMode!=="manage") return;
         const type=$("parentForm").querySelector('input[name="adjustmentType"]:checked')?.value || "bonus";
         const amount=Math.round(Number($("parentAdjustmentAmount").value));
         const balance=pointTotals().balance;
@@ -2104,7 +2450,7 @@
       $("todayButton").addEventListener("click",()=>{ state.selectedDate=dateKey(); save(); render(); });
 
       $("exportButton").addEventListener("click",()=>{
-        const blob=new Blob([JSON.stringify({ version:7, exportedAt:new Date().toISOString(), data:state },null,2)],{type:"application/json"});
+        const blob=new Blob([JSON.stringify({ version:8, exportedAt:new Date().toISOString(), data:state },null,2)],{type:"application/json"});
         const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`知时学习数据-${dateKey()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast("数据已导出");
       });
       $("importButton").addEventListener("click",()=>$("importFile").click());
