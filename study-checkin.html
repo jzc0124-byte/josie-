@@ -494,6 +494,28 @@
     .redemption-end { display: flex; align-items: center; gap: 3px; }
     .redemption-cost { color: var(--red); font-size: 12px; font-weight: 720; white-space: nowrap; }
     .empty-redemptions { padding: 14px 0; color: var(--muted); font-size: 11px; border-top: 1px solid var(--line); }
+    .point-ledger {
+      margin-top: 48px;
+      padding-top: 30px;
+      border-top: 1px solid var(--line-strong);
+    }
+    .point-ledger-list { display: grid; gap: 12px; }
+    .point-day { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+    .point-day-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 54px; padding: 10px 16px; background: var(--surface-deep); }
+    .point-day-date { font-size: 14px; line-height: 20px; font-weight: 760; }
+    .point-day-date span { margin-left: 7px; color: var(--muted); font-size: 11px; font-weight: 600; }
+    .point-day-total { flex: 0 0 auto; color: var(--green-dark); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .point-day-total.negative { color: var(--red); }
+    .point-entry { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 10px; min-height: 48px; padding: 8px 16px; border-top: 1px solid var(--line); }
+    .point-entry:first-child { border-top: 0; }
+    .point-entry-kind { min-width: 42px; border-radius: 4px; background: var(--green-soft); color: var(--green-dark); padding: 3px 6px; font-size: 10px; line-height: 16px; font-weight: 760; text-align: center; }
+    .point-entry.negative .point-entry-kind { background: var(--red-soft); color: var(--red); }
+    .point-entry-main { min-width: 0; }
+    .point-entry-title { color: var(--ink); font-size: 13px; line-height: 19px; font-weight: 680; overflow-wrap: anywhere; }
+    .point-entry-time { margin-top: 1px; color: var(--muted); font-size: 10px; line-height: 15px; }
+    .point-entry-value { color: var(--green-dark); font-size: 13px; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .point-entry.negative .point-entry-value { color: var(--red); }
+    .point-ledger-empty { padding: 28px 18px; border: 1px dashed var(--line-strong); border-radius: var(--radius); color: var(--muted); text-align: center; font-size: 13px; line-height: 21px; }
     .toast {
       position: fixed;
       left: 50%;
@@ -721,6 +743,7 @@
       .fixed-schedule { order: 6; }
       .points-section { order: 7; }
       .weekly-review { order: 8; }
+      .point-ledger { order: 9; }
       .workspace > div { order: 0; }
       .side { display: contents; }
       .timer-card, #sessionSection { width: 100%; }
@@ -766,6 +789,7 @@
       .task-form.custom-task #taskTitle { grid-column: 1 / -1; border-top: 1px solid var(--line); border-bottom: 0; }
       .weekly-review { margin-top: 38px; }
       .points-section { margin-top: 38px; }
+      .point-ledger { margin-top: 38px; }
       .reward-catalog { grid-template-columns: 1fr; }
     }
     @media (max-width: 520px) {
@@ -806,6 +830,9 @@
       .reward-row { grid-template-columns: 1fr; }
       .reward-row button { width: 100%; }
       .catalog-form { grid-template-columns: minmax(0,1fr) 84px 48px; }
+      .point-day-head { min-height: 50px; padding: 9px 12px; }
+      .point-entry { gap: 8px; min-height: 46px; padding: 8px 12px; }
+      .point-entry-kind { min-width: 38px; padding-inline: 4px; }
     }
     @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
   </style>
@@ -1045,6 +1072,14 @@
           </form>
         </div>
       </div>
+    </section>
+
+    <section class="point-ledger" aria-labelledby="pointLedgerTitle">
+      <div class="weekly-head">
+        <h2 id="pointLedgerTitle">每日获得积分明细</h2>
+        <span class="weekly-range" id="pointLedgerSummary">仅展示最近 10 天</span>
+      </div>
+      <div class="point-ledger-list" id="pointLedgerList"></div>
     </section>
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1299,7 +1334,7 @@
       ];
       const TITLE_WORKFLOW = { "完成作业":"homework", "学校作业":"homework", "辅导班作业":"homework", "周末复习卷":"homework", "课前预习":"preview", "课后复习":"review" };
       const TITLE_ROUTINE = { "完成作业":"school-homework", "学校作业":"school-homework", "课前预习":"preview", "课后复习":"review", "课外阅读":"reading", "象棋":"chess", "中国象棋":"chess" };
-      const REWARD_CATALOG_VERSION = 4;
+      const REWARD_CATALOG_VERSION = 5;
       const COLORS = { "数学":"#3977a9", "语文":"#b5534a", "英语":"#237452", "科学":"#a87925", "阅读":"#7562a5", "象棋":"#8a5a3b", "学习":"#4c7f8c", "家务":"#a06b30", "其他":"#65706a" };
       const DEFAULT_REWARDS = [
         { id:"reward-family-choice", title:"选择一次家庭游戏或当天菜单", cost:40 },
@@ -1309,7 +1344,8 @@
         { id:"reward-shaved-ice", title:"吃沙冰", cost:100 },
         { id:"reward-zhaoyiming", title:"赵一鸣买吃的", cost:150 },
         { id:"reward-weekend-choice", title:"选择一次周末活动或家庭电影", cost:180 },
-        { id:"reward-feast", title:"吃一顿大餐", cost:250 }
+        { id:"reward-feast", title:"吃一顿大餐", cost:250 },
+        { id:"reward-cash-30", title:"兑换 30 元", cost:300 }
       ];
       const TASK_PRESETS = {
         schoolHomework: { title:"学校作业", subject:"学习", minimum:"完成老师当天布置的作业并检查", estimate:"45", workflow:"homework", routineKey:"school-homework" },
@@ -1618,6 +1654,103 @@
         }).join("");
         $("weekQuestStatus").textContent=completedDays>=5 ? `目标达成 · ${completedDays}/7` : `已点亮 ${completedDays} 天 · 目标 5 天`;
       }
+      function dayEndTimestamp(day) {
+        const value=dateFromKey(day);
+        value.setHours(23,59,59,999);
+        return value.getTime();
+      }
+      function sessionPointDetail(session) {
+        if(session.completion==="short") return "未达到最低量";
+        if(session.workflow==="homework") {
+          const routineKey=session.routineKey || TITLE_ROUTINE[session.taskTitle] || null;
+          const base={"school-homework":8,"tutoring-homework":6,"review-paper":8}[routineKey] || 6;
+          const parts=[`完成并检查 +${base}`];
+          const process=session.homeworkProcess || {};
+          if(process.readQuestion && process.circledKeywords && process.scratchPaper) parts.push("规范作答 +2");
+          if(session.correctedErrors) parts.push("发现并改正错误 +2");
+          return parts.join(" · ");
+        }
+        if(isChoreSession(session)) return "家长确认完成";
+        return "家长确认完成记录";
+      }
+      function pointLedgerEntries() {
+        const entries=[];
+        state.sessions.forEach(session=>{
+          const amount=sessionPoints(session);
+          if(amount<=0) return;
+          entries.push({
+            id:`session-${session.id}`,
+            timestamp:Number(session.endedAt || session.startedAt || 0),
+            title:session.taskTitle || "学习任务",
+            detail:sessionPointDetail(session),
+            kind:isChoreSession(session) ? "家务" : "学习",
+            amount
+          });
+        });
+
+        const sessionsByDay={};
+        state.sessions.filter(session=>sessionPoints(session)>0 && !isChoreSession(session)).forEach(session=>{
+          const day=dateKey(session.startedAt);
+          (sessionsByDay[day] ||= []).push(session);
+        });
+        Object.entries(sessionsByDay).forEach(([day,sessions])=>{
+          const focusedSeconds=sessions.reduce((sum,session)=>sum+Number(session.durationSeconds || 0),0);
+          if(focusedSeconds>=1800) entries.push({ id:`focus-${day}`, timestamp:dayEndTimestamp(day)-2, timeLabel:"每日结算", title:"当天有效专注满 30 分钟", detail:`累计专注 ${secondsText(focusedSeconds)}`, kind:"奖励", amount:2 });
+        });
+
+        const studyDays=[...new Set(state.sessions.map(session=>dateKey(session.startedAt)))];
+        studyDays.forEach(day=>{
+          if(isCoreDayComplete(day)) entries.push({ id:`core-${day}`, timestamp:dayEndTimestamp(day)-1, timeLabel:"每日结算", title:"当天核心任务全部完成", detail:"作业、预习、复习、阅读均已完成", kind:"奖励", amount:5 });
+        });
+
+        const seriousDaysByWeek={};
+        studyDays.filter(isSeriousStudyDay).sort().forEach(day=>{ const week=weekStartKey(day); (seriousDaysByWeek[week] ||= []).push(day); });
+        Object.entries(seriousDaysByWeek).forEach(([week,days])=>{
+          if(days.length<5) return;
+          const awardDay=days[4];
+          entries.push({ id:`week-${week}`, timestamp:dayEndTimestamp(awardDay), timeLabel:"达成奖励", title:"本周认真学习达到 5 天", detail:`${managerWeekLabel(week)} 达成`, kind:"奖励", amount:10 });
+        });
+
+        state.pointAdjustments.forEach(item=>{
+          const positive=item.type==="bonus";
+          entries.push({ id:`adjust-${item.id}`, timestamp:Number(item.createdAt || 0), title:item.reason || (positive ? "家长加分" : "家长减分"), detail:positive ? "家长奖励" : item.source==="bedtime-missed" ? "每日习惯未完成" : "家长调整", kind:"家长", amount:(positive ? 1 : -1)*Math.max(0,Number(item.amount || 0)) });
+        });
+        state.redemptions.forEach(item=>{
+          entries.push({ id:`redeem-${item.id}`, timestamp:Number(item.redeemedAt || 0), title:`兑换：${item.title}`, detail:"奖励商店兑换", kind:"兑换", amount:-Math.max(0,Number(item.cost || 0)) });
+        });
+        return entries.filter(item=>item.timestamp && item.amount).sort((a,b)=>b.timestamp-a.timestamp);
+      }
+      function renderPointLedger() {
+        const today=dateKey(), cutoff=shiftDate(today,-9);
+        const entries=pointLedgerEntries().filter(entry=>{
+          const day=dateKey(entry.timestamp);
+          return day>=cutoff && day<=today;
+        });
+        const groups=[];
+        entries.forEach(entry=>{
+          const day=dateKey(entry.timestamp);
+          let group=groups[groups.length-1];
+          if(!group || group.day!==day) { group={day,entries:[]}; groups.push(group); }
+          group.entries.push(entry);
+        });
+        $("pointLedgerSummary").textContent=entries.length ? `近 10 天 · ${groups.length} 天有变化 · 共 ${entries.length} 笔` : "最近 10 天还没有积分记录";
+        if(!entries.length) {
+          $("pointLedgerList").innerHTML='<div class="point-ledger-empty"><strong>最近 10 天还没有积分记录</strong><br>完成今天的任务并由家长确认后，积分会出现在这里。</div>';
+          return;
+        }
+        const yesterday=shiftDate(today,-1);
+        $("pointLedgerList").innerHTML=groups.map(group=>{
+          const net=group.entries.reduce((sum,item)=>sum+item.amount,0);
+          const dateLabel=new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric",weekday:"short"}).format(dateFromKey(group.day));
+          const relative=group.day===today ? "今天" : group.day===yesterday ? "昨天" : "";
+          const rows=group.entries.map(item=>{
+            const negative=item.amount<0;
+            const time=item.timeLabel || new Intl.DateTimeFormat("zh-CN",{hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(item.timestamp));
+            return `<div class="point-entry ${negative?'negative':''}"><span class="point-entry-kind">${escapeHtml(item.kind)}</span><div class="point-entry-main"><div class="point-entry-title">${escapeHtml(item.title)}</div><div class="point-entry-time">${time}${item.detail?` · ${escapeHtml(item.detail)}`:""}</div></div><strong class="point-entry-value">${item.amount>0?'+':''}${item.amount}</strong></div>`;
+          }).join("");
+          return `<article class="point-day"><div class="point-day-head"><div class="point-day-date">${dateLabel}${relative?`<span>${relative}</span>`:""}</div><strong class="point-day-total ${net<0?'negative':''}">${net>0?'+':''}${net} 分</strong></div><div>${rows}</div></article>`;
+        }).join("");
+      }
       function renderPoints() {
         const totals = pointTotals();
         $("pointsStat").textContent = String(totals.balance);
@@ -1636,6 +1769,7 @@
         $("redemptionBlock").hidden = !history.length;
         $("redemptionCount").textContent = `${history.length} 次`;
         $("redemptionList").innerHTML = history.map(item=>`<div class="redemption-row" data-redemption-id="${item.id}"><div><div class="redemption-title">${escapeHtml(item.title)}</div><div class="redemption-meta">${new Intl.DateTimeFormat("zh-CN",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(item.redeemedAt))}</div></div><div class="redemption-end"><span class="redemption-cost">-${Number(item.cost)}</span><button class="icon-button" type="button" data-action="undo-redemption" title="撤销兑换" aria-label="撤销兑换 ${escapeHtml(item.title)}">↶</button></div></div>`).join("");
+        renderPointLedger();
       }
       function hashPin(pin) {
         let hash=2166136261;
